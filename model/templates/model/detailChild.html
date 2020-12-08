@@ -6,9 +6,31 @@
     <title>Title</title>
 </head>
 <body>
-{% extends 'model/detail.html' %}
-<h1>子模板底部内容</h1>
-{% block page-js %}
-<a>bbbbbbbb</a>
-{% endblock %}
+{#{% extends 'model/detail.html' %}#}
+{#<h1>子模板底部内容</h1>#}
+{#{% block page-js %}#}
+{##}
+{##}
+{##}
+{##}
+{#<a>bbbbbbbb</a>#}
+{##}
+{##}
+{#{% endblock %}#}
+<h1>1</h1>
+{# 打印告警信息 #}
+{% if has_warn == 'warning' %}
+{{ warn_msg }}
+{% endif %}
+
+{# 打印动物列#}
+<ul>
+{% for animal in "afefq" %}
+    <li>{{ animal }}</li>
+{% endfor %}
+</ul>
+
+{#<div>首字母大写:{{ 'imooc' | capitalize  }}</div>#}
+{#<div>大写:{{ 'imooc' | upper }}</div>#}
+
 </body>

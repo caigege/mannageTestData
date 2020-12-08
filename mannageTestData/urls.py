@@ -25,6 +25,7 @@ name	为你的 URL 取名能使你在 Django 的任意地方唯一地引用它�
 from django.contrib import admin
 from django.urls import path
 from  model import views
+from L1_Task_create import views as L1_Task_createView
 # from  login import views
 
 urlpatterns = [
@@ -32,6 +33,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     # path("",views.model_resp),
 # path('', views.detail, name='detail'),
-path('', views.detailChild, name='detailChild'),
+# path('detailChild/', views.detailChild, name='detailChild'),
+path('detailChild/', views.detailChild, name='detailChild'),
+path('task/', L1_Task_createView.create_Task, name='detailChild'),
 ]
 

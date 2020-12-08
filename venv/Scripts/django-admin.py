@@ -12,7 +12,7 @@ except ImportError:
         '4.0. Please manually remove this script from your virtual environment '
         'and use django-admin instead.'
     )
-
+f
 if __name__ == "__main__":
     warnings.warn(
         'django-admin.py is deprecated in favor of django-admin.',

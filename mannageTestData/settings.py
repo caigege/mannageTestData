@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'login',
-    'model.apps.ModelConfig'
+    'model.apps.ModelConfig',
+    'L1_Task_create'
 ]
 MIDDLEWARE_CLASSES = (
    'django.contrib.sessions.middleware.SessionMiddleware',
