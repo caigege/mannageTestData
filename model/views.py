@@ -30,3 +30,7 @@ def detailChild(request):
     context = {'book_list': book_list}
 
     return render(request, 'model/detailChild.html', context)
+
+
+def test():
+    print(1)
