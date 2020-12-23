@@ -6,17 +6,17 @@
     <title>Title</title>
 </head>
 <body>
-{#{% extends 'model/detail.html' %}#}
-{#<h1>子模板底部内容</h1>#}
-{#{% block page-js %}#}
-{##}
-{##}
-{##}
-{##}
-{#<a>bbbbbbbb</a>#}
-{##}
-{##}
-{#{% endblock %}#}
+{% extends 'model/detail.html' %}
+<h1>子模板底部内容</h1>
+{% block page-js %}
+
+
+
+
+<a>bbbbbbbb</a>
+
+
+{% endblock %}
 <h1>1</h1>
 {# 打印告警信息 #}
 {% if has_warn == 'warning' %}

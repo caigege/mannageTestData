@@ -26,15 +26,21 @@ from django.contrib import admin
 from django.urls import path
 from  model import views
 from L1_Task_create import views as L1_Task_createView
+from login import views as loginView
 # from  login import views
 
 urlpatterns = [
-
     path('admin/', admin.site.urls),
     # path("",views.model_resp),
-# path('', views.detail, name='detail'),
-# path('detailChild/', views.detailChild, name='detailChild'),
-path('detailChild/', views.detailChild, name='detailChild'),
-path('task/', L1_Task_createView.create_Task, name='detailChild'),
+    # path('', views.detail, name='detail'),
+    # path('detailChild/', views.detailChild, name='detailChild'),
+    path('detailChild/', views.detailChild, name='detailChild'),
+    path('task/', L1_Task_createView.create_Task, name='detailChild'),
+    path('sys/login/', loginView.login, name='login'),
+    path('sys/welcome/', loginView.fristPage, name='welcome'),
+    path('login/', loginView.welcome, name='hadLogin'),
+    path('sys/register/', loginView.register, name='register'),
+
+    # path('sys/login/', loginView.fristPage, name='login'),
 ]
 
