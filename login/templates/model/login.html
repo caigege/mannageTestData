@@ -1,0 +1,46 @@
+<!--login/templates/model/login.html-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>任务管理系统</title>
+    {#    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.0/jquery.min.js"></script>#}
+    <script>
+        function fristPage() {
+            self.location.href = "";
+        }
+
+        function showRegister() {
+            document.getElementById("login").style.display = "none";
+            document.getElementById("register").style.display = "none";
+            document.getElementById("registerDiv").style.display = "inline";
+        }
+    </script>
+</head>
+<body>
+<button onclick="fristPage()">首页</button>
+<div id="login">
+    <form action="/sys/login/" method="post">{% csrf_token %}
+        <input id="account" type="text" name="account" placeholder="账号/电话"><br/>
+        <input id="password" type="text" name="password" placeholder="密码"><br/>
+        <input type="submit" value="登录">
+    </form>
+
+</div>
+<button id="register" onclick="showRegister()">注册</button>
+
+<div id="registerDiv" style="display:none">
+    <form action="/sys/register/" method="post">{% csrf_token %}
+
+        <input id="account" type="text" name="account" placeholder="电话"><br/>
+        <input id="password" type="text" name="password" placeholder="密码"><br/>
+        <input id="code" type="number" maxlength="4" placeholder="输入验证码">
+        <input type="submit" value="注册">
+    </form>
+    <button>获取验证码</button>
+    <br/>
+</div>
+
+
+</body>
+</html>
