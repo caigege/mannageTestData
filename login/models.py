@@ -10,6 +10,7 @@ class User(models.Model):
     headPortrait = models.ImageField("头像",null=True,width_field=50,height_field=60,blank=True)
     identityCard = models.CharField("身份证",max_length=18,null=True,unique = True,blank=True)
     birthday = models.DateField("生日",blank=True,null=True)
+    type=models.IntegerField("账号类型",default=1)
     models.AutoField
 
 

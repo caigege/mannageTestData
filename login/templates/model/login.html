@@ -11,9 +11,26 @@
         }
 
         function showRegister() {
+            {#隐藏#}
             document.getElementById("login").style.display = "none";
             document.getElementById("register").style.display = "none";
+            {#显示#}
             document.getElementById("registerDiv").style.display = "inline";
+        }
+
+        function getCompany() {
+            var type = document.getElementById("type").value;
+            {#alert(type+":"+(type == "企业"))#}
+
+            if (type == "企业") {
+                {#显示#}
+                {#alert(1)#}
+                document.getElementById("companyName").style.display = "inline";
+            } else {
+                {#隐藏#}
+                {#alert(2)#}
+                document.getElementById("companyName").style.display = "none";
+            }
         }
     </script>
 </head>
@@ -21,9 +38,15 @@
 <button onclick="fristPage()">首页</button>
 <div id="login">
     <form action="/sys/login/" method="post">{% csrf_token %}
-        <input id="account" type="text" name="account" placeholder="账号/电话"><br/>
-        <input id="password" type="text" name="password" placeholder="密码"><br/>
-        <input type="submit" value="登录">
+        <input id="account" type="text" name="account" placeholder="账号/电话" maxlength="13"><br/>
+        <input id="password" type="text" name="password" placeholder="密码" maxlength="10" minlength="3"><br/>
+        <datalist id="typelist">
+            {% for typeid in types_list %}
+                <option>{{ typeid.typeName }}</option>
+            {% endfor %}
+        </datalist>
+        <input id="type" onchange="getCompany()" type="text" name="type" list="typelist" placeholder="选择账户类型"><br/>
+            <input type="submit" value="登录">
     </form>
 
 </div>
@@ -32,15 +55,22 @@
 <div id="registerDiv" style="display:none">
     <form action="/sys/register/" method="post">{% csrf_token %}
 
-        <input id="account" type="text" name="account" placeholder="电话"><br/>
-        <input id="password" type="text" name="password" placeholder="密码"><br/>
+        <input id="account" type="text" name="account" placeholder="电话" maxlength="13"><br/>
+        <input id="password" type="text" name="password" placeholder="密码" maxlength="10" minlength="3"><br/>
+        <datalist id="typelist">
+            {% for typeid in types_list %}
+                <option>{{ typeid.typeName }}</option>
+            {% endfor %}
+        </datalist>
+        <input id="type" onchange="getCompany()" type="text" name="type" list="typelist" placeholder="选择账户类型"><br/>
         <input id="code" type="number" maxlength="4" placeholder="输入验证码">
+        <input id="getCode" type="button" value="获取验证码"><br/>
+        <input id="companyName" type="text" style="display:none" name="companyName" placeholder="输入公司名称"><br/>
         <input type="submit" value="注册">
     </form>
-    <button>获取验证码</button>
     <br/>
 </div>
-
+{#        下拉选#}
 
 </body>
 </html>

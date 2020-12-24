@@ -7,7 +7,7 @@
     <title>Title</title>
 </head>
 <body>
-{% block page-main %}
+{#{% block page-main %}#}
     <h1>Book List</h1>
     <table>
         <tr>
@@ -16,7 +16,7 @@
             <td>出版社</td>
             <td>出版时间</td>
         </tr>
-        {% for book in book_list.all %}
+        {% for book in book_list1.all %}
             <tr>
                 <td>{{ book.name }}</td>
                 <td>{{ book.author }}</td>
@@ -25,38 +25,38 @@
             </tr>
         {% endfor %}
         {#<a>111111</a>#}
-        {% for i in "abcd ef" %}
-            <a>{{ forloop.counter }}</a><a> - </a>
-            <a>{{ forloop.counter0 }}</a><a> - </a>
-            <a>{{ forloop.revcounter }}</a><a> - </a>
-            <a>{{ forloop.first }}</a><a> - </a>
-            <a>{{ forloop.last }}</a><a> - </a>
-            <a>{{ forloop.parentloop }}</a><a> - </a>
-            <a>{{ i|upper }}{{ i|join:', ' }}</a><br/><a> - </a>
-
-        {% endfor %}
+{#        {% for i in "abcd ef" %}#}
+{#            <a>{{ forloop.counter }}</a><a> - </a>#}
+{#            <a>{{ forloop.counter0 }}</a><a> - </a>#}
+{#            <a>{{ forloop.revcounter }}</a><a> - </a>#}
+{#            <a>{{ forloop.first }}</a><a> - </a>#}
+{#            <a>{{ forloop.last }}</a><a> - </a>#}
+{#            <a>{{ forloop.parentloop }}</a><a> - </a>#}
+{#            <a>{{ i|upper }}{{ i|join:', ' }}</a><br/><a> - </a>#}
+{##}
+{#        {% endfor %}#}
         {#{{   xx=[1,2,3,4] }}#}
-        {% for x in forloop.counter %}
-            <a>{{ x }}</a><br/>
-            <a>{{ x|default:"nothing" }}</a><br/><a> - </a>
-        {% empty %}
-            <li>空空如也</li>
-
-        {% endfor %}
-    </table>
-
-{% for a in '123456' %}
-    <a>a</a>
-
-{% endfor %}
-
-
-{% endblock %}
-
-<h1>母板底部内容</h1>
-{% block page-js %}
-    <a>aaaaaa</a>
-{% endblock %}
+{#        {% for x in forloop.counter %}#}
+{#            <a>{{ x }}</a><br/>#}
+{#            <a>{{ x|default:"nothing" }}</a><br/><a> - </a>#}
+{#        {% empty %}#}
+{#            <li>空空如也</li>#}
+{##}
+{#        {% endfor %}#}
+{#    </table>#}
+{##}
+{#{% for a in '123456' %}#}
+{#    <a>a</a>#}
+{##}
+{#{% endfor %}#}
+{##}
+{##}
+{#{% endblock %}#}
+{##}
+{#<h1>母板底部内容</h1>#}
+{#{% block page-js %}#}
+{#    <a>aaaaaa</a>#}
+{#{% endblock %}#}
 
 
 

@@ -32,10 +32,10 @@ from login import views as loginView
 urlpatterns = [
     path('admin/', admin.site.urls),
     # path("",views.model_resp),
-    # path('', views.detail, name='detail'),
+    path('', views.detail, name='detail'),
     # path('detailChild/', views.detailChild, name='detailChild'),
     path('detailChild/', views.detailChild, name='detailChild'),
-    path('task/', L1_Task_createView.create_Task, name='detailChild'),
+    path('task/', L1_Task_createView.create_Task, name='task'),
     path('sys/login/', loginView.login, name='login'),
     path('sys/welcome/', loginView.fristPage, name='welcome'),
     path('login/', loginView.welcome, name='hadLogin'),

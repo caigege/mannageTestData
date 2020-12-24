@@ -19,8 +19,8 @@ def model_resp(request):
 
 def detail(request):
     book_list = Book.objects.order_by('pub_date')[:5]
-    context = {'book_list': book_list}
-    print((book_list.all())[0].pub_date)
+    context = {'book_list1': book_list}
+    print("-----*****--:"+str((book_list.all())[0].pub_date))
 
     return render(request, 'model/detail.html', context)
 
