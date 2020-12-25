@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>任务管理系统企业用户</title>
+</head>
+<body>
+公司名称:{{ companyHtml.name }}
+公司简介: {% if not companyHtml.description %}
+   暂无
+
+{% endif %}
+<br/>
+<button >招聘</button>
+<table >
+  <thead>
+    <tr>
+      <th>Month</th>
+      <th>Savings</th>
+    </tr>
+  </thead>
+
+{#  <tfoot>#}
+{#    <tr>#}
+{#      <td>Sum</td>#}
+{#      <td>$180</td>#}
+{#    </tr>#}
+{#  </tfoot>#}
+
+  <tbody>
+    <tr>
+      <td>January</td>
+      <td>$100</td>
+    </tr>
+    <tr>
+      <td>February</td>
+      <td>$80</td>
+    </tr>
+  </tbody>
+</table>
+
+</body>
+</html>

@@ -16,8 +16,3 @@ id是唯一的 主键
 
 '''
 # TODO 任务数据设计文档——用户
-class User(models.Model):
-    name = models.CharField(max_length=200)
-    author = models.CharField(max_length=100)
-    pub_house = models.CharField(max_length=200)
-    pub_date = models.DateTimeField('date published')

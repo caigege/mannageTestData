@@ -3,10 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <title>任务管理系统</title>
+    <script>
+        function toCompany() {
+            self.location = "/company/";
+        }
+           function toSelf() {
+            self.location.href = "";
+        }
+        
+        
+    </script>
 </head>
 <body>
-<h1>{{ msg  }}</h1>
+<h1>{{ msg }}</h1>
 登录成功 欢迎 来到任务系统
 
+{% if msg == "企业版" %}
+
+    <button   onclick="toCompany()">进入企业版</button>
+{% else %}
+    <button  onclick="toSelf()">进入个人版</button>
+{% endif %}
 </body>
 </html>

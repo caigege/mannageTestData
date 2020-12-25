@@ -27,6 +27,8 @@ from django.urls import path
 from  model import views
 from L1_Task_create import views as L1_Task_createView
 from login import views as loginView
+from company import views as companyView
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 # from  login import views
 
 urlpatterns = [
@@ -38,9 +40,11 @@ urlpatterns = [
     path('task/', L1_Task_createView.create_Task, name='task'),
     path('sys/login/', loginView.login, name='login'),
     path('sys/welcome/', loginView.fristPage, name='welcome'),
-    path('login/', loginView.welcome, name='hadLogin'),
+    # path('login/', loginView.welcome, name='hadLogin'),
     path('sys/register/', loginView.register, name='register'),
+    path('company/', companyView.companyC, name='company'),
+
 
     # path('sys/login/', loginView.fristPage, name='login'),
 ]
-
+urlpatterns += staticfiles_urlpatterns()

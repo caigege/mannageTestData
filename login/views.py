@@ -1,5 +1,5 @@
 import re
-
+import secrets
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render, redirect
 
@@ -7,7 +7,7 @@ from company.models import Company
 from login.models import User
 
 
-def fristPage(request):
+def  fristPage(request):
     '''
     :param request: 首頁
     :return:
@@ -39,6 +39,7 @@ def login(request):
 
                 print("passwordDB: " + passwordDB)
                 if (password == passwordDB):
+                    # request.session["key"]=
 
                     return render(request, 'model/welcom.html', {'msg': '个人版'})
 
@@ -59,17 +60,38 @@ def login(request):
                 print("passwordDB: " + passwordDB)
                 if (password == passwordDB):
                     # return redirect('/login/')
-                    return render(request, 'model/welcom.html', {'msg': '企业版'})
+                    cookie = request.COOKIES.get("csrftoken")
+                    print("cookie ：" + cookie)
+                    # request.session['is_login'] = True
+                    request.session['user'] = account
+                    request.session['csrftoken'] = cookie
+                    result=render(request, 'model/welcom.html', {'msg': '企业版'})
+                    result.set_cookie('csrftoken',cookie)
+                    return result
             return render(request, 'model/erro/loginErro.html', {'error_msg': '账号/或密码错误'})
         else:
             return render(request, 'model/erro/loginErro.html', {'error_msg': '类型异常'})
         # ----------------------------------
     return render(request, 'model/erro/loginErro.html', {'error_msg': 'get请求异常'})
 
+def auth(func):
+    def inner(request,*args,**kwargs):
+        v=request.COOKIES.get('csrftoken')
+        if not v:
+            return  redirect('/sys/welcome/')
+        return func(request,*args,**kwargs)
+    return inner
 
-def welcome(request):
 
-    return render(request, 'model/welcom.html')
+
+
+
+
+# def welcome(request):
+#
+#     cft=request.session.get("csrftoken")
+#     print("ctf :" +cft )
+#     return render(request, 'model/welcom.html')
 
 
 def check(table, field, fieldObject):

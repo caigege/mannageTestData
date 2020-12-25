@@ -11,13 +11,3 @@ class Company(models.Model):
     trademark = models.ImageField("头像", null=True, width_field=50, height_field=60, blank=True)
     models.AutoField
 
-
-
-
-
-
-
-
-
-
-

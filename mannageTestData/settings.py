@@ -12,6 +12,10 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 import pymysql
 from pathlib import Path
 import os
+#配置静态资源
+STATIC_URL='/static'
+ROOT_PATH = 'F:\\mannageTestData'
+STATICFILES_DIRS = (os.path.join(ROOT_PATH,'static'),)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -43,6 +47,7 @@ INSTALLED_APPS = [
     'model.apps.ModelConfig',
     'L1_Task_create',
     'company'
+
 
 ]
 MIDDLEWARE_CLASSES = (
