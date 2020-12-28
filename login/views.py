@@ -37,6 +37,7 @@ def login(request):
                 user = getVuale("User", "phone", account)
                 passwordDB = user.password
 
+
                 print("passwordDB: " + passwordDB)
                 if (password == passwordDB):
                     # request.session["key"]=
@@ -105,16 +106,20 @@ def check(table, field, fieldObject):
 
 
 def getVuale(table, field, fieldObject):
+    '''
+    获取单个对象
+    :param table: String：  models. class 类名
+    :param field: String 字段名
+    :param fieldObject: 对象
+    :return:
+    '''
     checkObject = table + ".objects.get(" + field + "=" + fieldObject + ")"
 
-    # checkObject=checkObject+"return judge"
     print(checkObject)
     result = eval(checkObject)
     print("result:" + str(result))
-    # print("result:"+type(result))
 
     return result
-    # return result
 
 
 def register(request):

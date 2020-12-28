@@ -5,6 +5,7 @@ from django.db import models
 class User(models.Model):
     gender = models.BooleanField("性别", default=1)
     name = models.CharField("姓名", max_length=20)
+    education = models.CharField("学历", max_length=20)
     password = models.CharField("密码", max_length=20)
     email = models.CharField("邮件", max_length=200, null=True, blank=True)
     phone = models.CharField("电话", max_length=20, unique=True)
@@ -12,6 +13,8 @@ class User(models.Model):
     identityCard = models.CharField("身份证", max_length=18, null=True, unique=True, blank=True)
     birthday = models.DateField("生日", blank=True, null=True)
     type = models.IntegerField("账号类型", default=1)
+    postStatus = models.IntegerField("职务状态", default=1)
+    creatTime=models.DateTimeField("注册时间")
     models.AutoField
 
     # 1.upload_to 参数接收一个回调函数 user_directory_path，该函数返回具体的路径字符串，图片会自动上传到指定路径下，

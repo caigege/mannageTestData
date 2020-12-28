@@ -13,6 +13,8 @@
       <option name="ignoredIdentifiers">
         <list>
           <option value="login.views.UniversityDetails" />
+          <option value="company.tests.dic" />
+          <option value="company.tests.*" />
         </list>
       </option>
     </inspection_tool>

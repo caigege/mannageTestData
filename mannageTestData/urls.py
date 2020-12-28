@@ -43,6 +43,8 @@ urlpatterns = [
     # path('login/', loginView.welcome, name='hadLogin'),
     path('sys/register/', loginView.register, name='register'),
     path('company/', companyView.companyC, name='company'),
+    path('newList/user/', companyView.newList),
+    path('addEmp/<id>/', companyView.addEmp),
 
 
     # path('sys/login/', loginView.fristPage, name='login'),
