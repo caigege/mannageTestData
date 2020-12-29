@@ -4,102 +4,95 @@
     <meta charset="UTF-8">
     <title>任务管理系统企业用户</title>
     <script src="/static/js/jquery-3.5.1.min.js"></script>
-    <script>
-        $(document).ready(function () {
-
-            $("button[name='add']").click(function () {
-                var id = $(this).val()
-                {# 添加员工 #}
-                $.ajax({
-                    url: "/addEmp/" + id, success: function (result) {
-
-
-
-                        {#$("#div1").html(result);#}
-                    }
-
-                });
-
-            })
-
-
-        })
-    </script>
+    <script src="/static/js/companyJs.js"></script>
 </head>
 <body>
 公司名称:<h1>{{ companyHtml.name }}</h1>
 公司简介: {% if not companyHtml.description %}
     暂无
-
 {% endif %}
 <br/>
-<button>招聘</button>
-<table border="1">
-    <thead>
-    <tr>
-        <th>姓名</th>
-        <th>性别</th>
-        <th>邮箱</th>
-        <th>电话</th>
-        <th>生日</th>
-        <th>学历</th>
-        <th>注册时间</th>
-        <th>操作</th>
-    </tr>
-    </thead>
 
-    {#  <tfoot>#}
-    {#    <tr>#}
-    {#      <td>Sum</td>#}
-    {#      <td>$180</td>#}
-    {#    </tr>#}
-    {#  </tfoot>#}
 
-    <tbody>
-    {% for user in page_User_Html.all %}
+<button name="dep">部门管理</button><button name="recruitment">招聘</button>
+
+
+<div class="dep" style="display:none">
+    <input type="text" minlength="1",maxlength="100" id="depName" placeholder="输入部门名2-100">
+{% csrf_token %}
+
+    <button name="addDep">添加部门</button>
+</div>
+
+
+<div class="recruitment" style="display:inline">
+    <table border="1">
+        <thead>
         <tr>
-            <td>{{ user.name }}</td>
-            {% if user.gender %}
-                <td>男</td>
-            {% else %}
-                <td>女</td>
-            {% endif %}
-            {% if user.email is None %}
-                <td>暂无</td>
-            {% else %}
-                <td>{{ user.email }}</td>
-            {% endif %}
-            <td>{{ user.phone }}</td>
-            <td>{{ user.birthday|date:"Y-m-d" }}</td>
-            <td>{{ user.education }}</td>
-            <td>{{ user.creatTime|date:"Y-m-d" }}</td>
-            <td>
-                <button name="add" value={{ user.id }}>添加</button>
-            </td>
-            {#    onclick="addEmp()" }#}
+            <th>姓名</th>
+            <th>性别</th>
+            <th>邮箱</th>
+            <th>电话</th>
+            <th>生日</th>
+            <th>学历</th>
+            <th>注册时间</th>
+            <th>操作</th>
         </tr>
-    {% endfor %}
-    </tbody>
-</table>
+        </thead>
 
-{#页码/总页码 每页数  总数  翻页#}
-<div class="pagelist">页次：{{ p_Html }}/{{ pTotal_Html }} 每页{{ PageNum_Html }} 总数{{ total_Html }}
-    <a href="/newList/{{ types }}/1/">首页</a>
-    {% if  p_Html >  1 %}
-        <a href="/newList/{{ types }}/{{ p_Html|add:-1 }}/">上一页</a>
-    {% endif %}
+        {#  <tfoot>#}
+        {#    <tr>#}
+        {#      <td>Sum</td>#}
+        {#      <td>$180</td>#}
+        {#    </tr>#}
+        {#  </tfoot>#}
+
+        <tbody>
+        {% for user in page_User_Html.all %}
+            <tr>
+                <td>{{ user.name }}</td>
+                {% if user.gender %}
+                    <td>男</td>
+                {% else %}
+                    <td>女</td>
+                {% endif %}
+                {% if user.email is None %}
+                    <td>暂无</td>
+                {% else %}
+                    <td>{{ user.email }}</td>
+                {% endif %}
+                <td>{{ user.phone }}</td>
+                <td>{{ user.birthday|date:"Y-m-d" }}</td>
+                <td>{{ user.education }}</td>
+                <td>{{ user.creatTime|date:"Y-m-d" }}</td>
+                <td>
+                    <button name="add" value={{ user.id }}>添加</button>
+                </td>
+                {#    onclick="addEmp()" }#}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {#页码/总页码 每页数  总数  翻页#}
+    <div class="pagelist">页次：{{ p_Html }}/{{ pTotal_Html }} 每页{{ PageNum_Html }} 总数{{ total_Html }}
+        <a href="/newList/{{ types }}/1/">首页</a>
+        {% if  p_Html >  1 %}
+            <a href="/newList/{{ types }}/{{ p_Html|add:-1 }}/">上一页</a>
+        {% endif %}
 
 
-    {% for p_Html in page_range_Html %}
-        <a href="/newList/{{ types }}/{{ p_Html }}">{{ p_Html }}</a>
-    {% endfor %}
+        {% for p_Html in page_range_Html %}
+            <a href="/newList/{{ types }}/{{ p_Html }}">{{ p_Html }}</a>
+        {% endfor %}
 
 
-    {% if  p_Html <  pTotal_Html %}
-        <a href="/newList/{{ types }}/{{ p_Html|add:1 }}/">下一页</a>
-    {% endif %}
+        {% if  p_Html <  pTotal_Html %}
+            <a href="/newList/{{ types }}/{{ p_Html|add:1 }}/">下一页</a>
+        {% endif %}
 
-    <a href="/newList/{{ types }}/{{ pTotal_Html }}/">尾页</a></div>
+        <a href="/newList/{{ types }}/{{ pTotal_Html }}/">尾页</a></div>
+</div>
 </div>
 </body>
 </html>

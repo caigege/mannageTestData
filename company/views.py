@@ -1,37 +1,102 @@
-from django.shortcuts import render
-
 # Create your views here.
-from django.shortcuts import render, redirect
+from django.core.paginator import Paginator
+from django.http import JsonResponse
+from django.shortcuts import render,redirect
+from django.views.decorators.csrf import csrf_exempt
 
-from company.models import Company
+from company.models import Company,department
+from login import views
 from login.models import User
 from login.views import auth
-from login import views
-from django.core.paginator import Paginator
+
+from django.core import serializers
+
+# @postCheck
+# @auth
+@csrf_exempt
+def addDep(request):
+    depname = request.POST.get("depName")
+
+
+
+    # 验证是否为空
+    depnum = len(depname.replace(" ", "")) != 0
+    print(depnum)
+    # 验证是否包含"-"
+    dep_ = "-" not in depname
+    print(depnum, dep_)
+    if (not depnum or not dep_):
+        print(111111)
+        #  知识点 跨模块用html  不适用于ajax de render ajax 接收到的是字符串
+        # return redirect('/model/erro/loginErro.html', {'error_msg': '类型异常'})
+        msg={"message":"输入类型"}
+        # ret = serializers.serialize("json", msg)
+        from django.http import HttpResponse
+        return  JsonResponse(msg)
+        # return render(request, "model/success.html",context={"success_msg": "depname :" + depname})
+
+    # 查询名字是否重复
+    #   获取公司名字
+
+    accout = request.session.get("user")
+    company = views.getVuale("Company", "account", accout)
+    # companyID=company.id
+    # print("companyID ；",companyID)
+    cpat=company.name + "-"+depname
+    print(cpat)
+
+    departmentJp=views.check("department", "name", cpat)
+
+    # try:
+    #     judge = department.objects.get(name='算力科技-123')
+    #
+    #     departmentJp=True
+    # except:
+    #     departmentJp = False
+
+    print("departmentJp ：",departmentJp)
+    if(departmentJp):
+        msg = {"message": "Erro: depname 重复"}
+        return JsonResponse(msg)
+
+    # print("depname:" + depname)
+    # 知识点 外键必须是 一个外键对应的对象这里是 company 而不是 companyID
+    department.objects.create(name=cpat,companyId=company)
+    # 提示添加成功
+    msg = {"message": "success: 添加成功"}
+
+    return JsonResponse(msg)
+    # return render(request, "model/success.html", {"success_msg": "depname :" + depname})
 
 
 @auth
-def addEmp(request,id):
+def addEmp(request, id):
+    '''
+    添加员工
+    :param request:
+    :param id:  员工id
+    :return:
+    '''
     accout = request.session.get("user")
-    company =views.getVuale("Company","account",accout)
+    company = views.getVuale("Company", "account", accout)
 
-    empId= id
-    users = views.getVuale("User","id",empId)
+    empId = id
+    users = views.getVuale("User", "id", empId)
     # Todo 未考虑用户不存在情况
-    print("name： "+users.name)
-    employee={}
-    employee['gender']=users.gender
-    employee['name']=users.name
-    employee['education']=users.education
-    employee['email']=users.email
-    employee['phone']=users.phone
-    employee['headPortrait']=users.headPortrait
-    employee['identityCard']=users.identityCard
-    employee['birthday']=users.birthday
+    print("name： " + users.name)
+    employee = {}
+    employee['gender'] = users.gender
+    employee['name'] = users.name
+    employee['education'] = users.education
+    employee['email'] = users.email
+    employee['phone'] = users.phone
+    employee['headPortrait'] = users.headPortrait
+    employee['identityCard'] = users.identityCard
+    employee['birthday'] = users.birthday
 
-    employee['post']=users.post
+    employee['post'] = users.post
 
-    employee['companyId ']=company.id
+    employee['companyId '] = company.id
     # employee['']=users.
     # employee['']=users.
 
@@ -40,40 +105,32 @@ def addEmp(request,id):
     return
 
 
-
-
-
-
-
-
-
-
 @auth
 def companyC(request):
     user = request.session.get("user")
-    companyHtml=Company.objects.filter(account=user).first()
+    companyHtml = Company.objects.filter(account=user).first()
     Users_Html = User.objects.filter(postStatus=1).order_by("creatTime")
 
     # 页码 / 总页码
     p_Html = int("2")
-    page_size=1
+    page_size = 1
     pagtor = Paginator(Users_Html, per_page=page_size)
 
-    pTotal_Html=pagtor.num_pages
+    pTotal_Html = pagtor.num_pages
 
     # 总数
-    total_Html=pagtor.count
+    total_Html = pagtor.count
 
     # 当前页面对象数
-    Page=pagtor.page(1)
-    PageNum_Html=len(Page.object_list)
+    Page = pagtor.page(1)
+    PageNum_Html = len(Page.object_list)
     # 对象
     page_User_Html = pagtor.page(p_Html).object_list  # 返回对应页码
 
-    page_range_Html=pagtor.page_range
+    page_range_Html = pagtor.page_range
     print(page_range_Html)
-    types="user"
-    return render(request,"model/company_Center.html",locals())
+    types = "user"
+    return render(request, "model/company_Center.html", locals())
 
 
 @auth

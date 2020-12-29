@@ -3,7 +3,7 @@ import secrets
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render, redirect
 
-from company.models import Company
+from company.models import Company,department
 from login.models import User
 
 
@@ -76,12 +76,23 @@ def login(request):
     return render(request, 'model/erro/loginErro.html', {'error_msg': 'get请求异常'})
 
 def auth(func):
+    # token验证
     def inner(request,*args,**kwargs):
         v=request.COOKIES.get('csrftoken')
         if not v:
             return  redirect('/sys/welcome/')
         return func(request,*args,**kwargs)
     return inner
+
+def postCheck(func):
+    # 请求验证
+    def inner(request,*args,**kwargs):
+        v=request.method=='POST'
+        if not v:
+            render(request, 'model/erro/loginErro.html', {'error_msg': '类型异常'})
+        return func(request,*args,**kwargs)
+    return inner
+
 
 
 
@@ -96,6 +107,13 @@ def auth(func):
 
 
 def check(table, field, fieldObject):
+    '''
+    判断是否存在 相当于from * table where field=fieldObject
+    :param table: 表名 string
+    :param field: 字段名 string
+    :param fieldObject: 字段值
+    :return: Ture 存在 False 不存在
+    '''
     checkObject = "judge=" + table + ".objects.get(" + field + "=\'" + fieldObject + "\')"
     print("checkObject :"+checkObject)
     try:

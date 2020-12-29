@@ -1,5 +1,6 @@
 from django.db import models
 
+
 # Create your models here.
 class emp(models.Model):
     gender = models.BooleanField("性别", default=1)
@@ -12,11 +13,11 @@ class emp(models.Model):
     identityCard = models.CharField("身份证", max_length=18, null=True, unique=True, blank=True)
     birthday = models.DateField("生日", blank=True, null=True)
     level = models.IntegerField("等级", default=1)
-    post = models.CharField("岗位",max_length=20, null=True, blank=True)
+    post = models.CharField("岗位", max_length=20, null=True, blank=True)
     department = models.IntegerField("部门", default=1)
-    companyId = models.ForeignKey("company.models.Company",verbose_name="公司id" )
-    salary = models.DecimalField("工资", default=0.00,max_digits=7,decimal_places = 2)
+    companyId = models.ForeignKey("company.Company", verbose_name="公司id", on_delete=models.DO_NOTHING)
+    salary = models.DecimalField("工资", default=0.00, max_digits=7, decimal_places=2)
 
-    entryTime = models.DateTimeField("入职时间",auto_now_add=True)
+    entryTime = models.DateTimeField("入职时间", auto_now_add=True)
 
     models.AutoField

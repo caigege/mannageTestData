@@ -45,6 +45,7 @@ urlpatterns = [
     path('company/', companyView.companyC, name='company'),
     path('newList/user/', companyView.newList),
     path('addEmp/<id>/', companyView.addEmp),
+    path('company/addDep/', companyView.addDep),
 
 
     # path('sys/login/', loginView.fristPage, name='login'),

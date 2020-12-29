@@ -142,6 +142,7 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+SILENCED_SYSTEM_CHECKS = ['fields.E300', 'fields.E307']
 
 
 # Static files (CSS, JavaScript, Images)
