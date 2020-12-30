@@ -5,7 +5,30 @@ function getCookie(name) {
 
 $(document).ready(function () {
 
+    function getdep() {
+        // 查询部门
+        $.get(
+            "/company/getDep/",
+            function (data, status) {
+                //知识点 js 对象类型
+                // console.log("data type", typeof data)
+                console.log("data type: " + data[0]['name'])
+                console.log("data type: " + data.length)
+                // let len = data.length
+                $("#DepTbody").empty()
+                for (j = 0; j < data.length; j++) {
+                    $("#DepTbody").append("<tr>" + "<td>" + data[j]['name'] + "</td></tr>")
 
+
+                    // $("#DepTbody").append()
+                    // $("#DepTbody").append()
+                }
+
+
+            },
+            "json"//
+        )
+    }
 
     // $.ajaxSetup({
     //        data:{csrfmiddlewaretoken:'{{ csrf_token }}'}
@@ -18,13 +41,14 @@ $(document).ready(function () {
         // alert(1)
         //  添加部门
         let depname = $("#depName").val();
-        // if (depname == "" || $.trim(depname).length == 0) {
-        //     alert("不能为空");
-        //     throw SyntaxError();
-        // }
-        // ;
+        if (depname == "" || $.trim(depname).length == 0) {
+            alert("不能为空");
+            return
+            // throw SyntaxError();
+        }
 
-// todo token验证未处理
+
+        // todo token验证未处理
         var csrftoken = getCookie("csrftoken");
         // var csrftoken = Cookies.get('csrftoken');
         $.ajax({
@@ -40,6 +64,7 @@ $(document).ready(function () {
 
             success: function (resulet) {
                 alert(resulet.message)
+                getdep()
             }
         })
 
@@ -59,17 +84,16 @@ $(document).ready(function () {
 
         $(".dep").attr("style", "display:block;")
         $(".recruitment").attr("style", "display:none;")
+        getdep();
 
-        // $.ajax({
-        //     url: "/checkDep/", success: function (result) {
-        //     }
-        // })
+
     });
 
 
     $("button[name='add']").click(function () {
 
         let id = $(this).val()
+        console.log("id:"+id)
         {
             // 添加员工
 

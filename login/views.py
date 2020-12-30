@@ -1,5 +1,7 @@
 import re
 import secrets
+import time
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render, redirect
 
@@ -140,9 +142,25 @@ def getVuale(table, field, fieldObject):
     return result
 
 
+def getAllVuale(table, field, fieldObject):
+    '''
+    获取单个对象
+    :param table: String：  models. class 类名
+    :param field: String 字段名
+    :param fieldObject: 对象
+    :return:
+    '''
+    checkObject = table + ".objects.filter(" + field + "=" + fieldObject + ")"
+
+    print(checkObject)
+    result = eval(checkObject)
+    print("result:" + str(result))
+
+    return result
+
+
 def register(request):
     print("register-----")
-    # todo 输入判断未处理
     if request.method == 'POST':
         account = request.POST.get("account")
         password = request.POST.get("password")
@@ -160,8 +178,8 @@ def register(request):
             phoneJp = check("User", "phone", account)
 
             if (phoneJp == False):
-                User.objects.create(phone=account, password=password)
-                return redirect('/login/')
+                User.objects.create(phone=account, password=password,creatTime=time.strftime('%Y-%m-%d %H:%M:%S'))
+                return render(request, 'model/welcom.html', {'msg': '个人版'})
 
             return render(request, 'model/erro/loginErro.html', {'error_msg': '手机号已注册'})
 
@@ -175,7 +193,7 @@ def register(request):
                     if (companyNameJp == False):
 
                         Company.objects.create(account=account, password=password, name=companyName)
-                        return redirect('/login/')
+                        return render(request, 'model/welcom.html', {'msg': '企业版'})
                     return render(request, 'model/erro/loginErro.html', {'error_msg': '公司名重复'})
 
             return render(request, 'model/erro/loginErro.html', {'error_msg': '手机号已注册'})
