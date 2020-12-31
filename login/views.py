@@ -116,6 +116,7 @@ def check(table, field, fieldObject):
     :param fieldObject: 字段值
     :return: Ture 存在 False 不存在
     '''
+    print("fieldObject: "+fieldObject)
     checkObject = "judge=" + table + ".objects.get(" + field + "=\'" + fieldObject + "\')"
     print("checkObject :"+checkObject)
     try:
@@ -133,6 +134,7 @@ def getVuale(table, field, fieldObject):
     :param fieldObject: 对象
     :return:
     '''
+    print("getVuale-fieldObject: " + fieldObject)
     checkObject = table + ".objects.get(" + field + "=" + fieldObject + ")"
 
     print(checkObject)

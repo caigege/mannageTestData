@@ -1,15 +1,20 @@
 # Create your views here.
+import json
+import time
+
 from django.core import serializers
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 
 from company.models import Company, department
+from employee.models import emp
 from login import views
 from login.models import User
 from login.views import auth
-import json
+
 
 def getDep(request):
     '''
@@ -19,9 +24,9 @@ def getDep(request):
     '''
     result = departmentsGetResultAll(request)
 
-    resultOK=json.dumps(result)
-    print("resutl： ",type(result))
-    print("resutl： ",result)
+    resultOK = json.dumps(result)
+    print("resutl： ", type(result))
+    print("resutl： ", result)
 
     return HttpResponse(resultOK)
     # return JsonResponse(msg)
@@ -84,7 +89,7 @@ def traverse(list, *fied: str):
     遍历数据库查询结果列表 暂时不用 
     :return: 
     '''
-    print("fied, ",fied)
+    print("fied, ", fied)
 
     dic = {}
     for fiedChild in fied[0]:
@@ -161,30 +166,85 @@ def addEmp(request, id):
     '''
     accout = request.session.get("user")
     company = views.getVuale("Company", "account", accout)
-    print("id:"+id);
-    empId = id
+
+    idsStrs=str(id).split("&")
+    if (len(idsStrs) != 2):
+        mgs = {"message": "非法请求"}
+        return JsonResponse(mgs, charset='utf-8')
+
+    # print("id:"+id);
+    # print("dep:"+dep);
+    # print()
+    empId = idsStrs[0]
+    dep=idsStrs[1]
+    # 判断部门是否存在
+    department
+    depJ=views.check("department","name",company.name+"-"+dep)
+    print("depJ :",depJ)
+    if(not depJ):
+        mgs = {"message": "部门不存在"}
+        return JsonResponse(mgs, charset='utf-8')
+    departmentObject=views.getVuale("department","name","\'"+company.name+"-"+dep+"\'")
+
     users = views.getVuale("User", "id", empId)
     # Todo 未考虑用户不存在情况
     print("name： " + users.name)
     employee = {}
     employee['gender'] = users.gender
-    employee['name'] = users.name
-    employee['education'] = users.education
-    employee['email'] = users.email
+    if(users.name=="" or users.name is None):
+
+        employee['name'] = str(users.phone)
+    else:
+
+        employee['name'] = users.name
+    if (users.education == "" or users.education is None):
+        employee['education'] = "\'大专\'"
+    else:
+
+        employee['education'] = users.education
     employee['phone'] = users.phone
-    employee['headPortrait'] = users.headPortrait
+    employee['companyId'] = 'company'
+    employee['department'] = departmentObject.id
+
+    employee['email'] = users.email
+    # employee['headPortrait'] = users.headPortrait
     employee['identityCard'] = users.identityCard
     employee['birthday'] = users.birthday
 
-    # employee['post'] = users.postStatus
+    employee['entryTime'] ="\'" +time.strftime('%Y-%m-%d %H:%M:%S')+"\'"
+    empJ = createData(employee, "emp",obj=company)
 
-    employee['companyId '] = company
-    # employee['']=users.
-    # employee['']=users.
-
+    if not empJ:
+        mgs = {"message": empJ + "1添加失败"}
+    else:
+        User.objects.filter(id=empId).update(postStatus=2)
+        mgs = {"message": empJ + "2添加成功"}
+    #     return JsonResponse(mgs)
     # print("empId :"+id)
+    # mgs={"dep":id}
+    return JsonResponse(mgs, charset='utf-8')
 
-    return JsonResponse(employee)
+
+def createData(data: dict, table,obj=None):
+    '''
+    添加单条数据
+    :param data:
+    :return:
+    '''
+    # 遍历字典
+    keylist = data.keys()
+    dataStr = ""
+    for k in keylist:
+        dataStr += k + "=" + str(data.get(k)) + ","
+    dataStr = dataStr[1:len(dataStr) - 1]
+    print("dataStr: " + dataStr)
+    dataStr = table + ".objects.create(" + dataStr + ")"
+    try:
+        exec(dataStr,obj)
+        return True
+    except ObjectDoesNotExist:
+        return False
+    print(dataStr)
 
 
 @auth
@@ -214,15 +274,10 @@ def companyC(request):
     types = "user"
 
     types_list = departmentsGetResultAll(request)
-    j=0
+    j = 0
     for tl in types_list:
-        types_list[j]['name']=tl['name'].split("-")[1]
-        j+=1
-
-
-
-
-
+        types_list[j]['name'] = tl['name'].split("-")[1]
+        j += 1
     return render(request, "model/company_Center.html", locals())
 
 

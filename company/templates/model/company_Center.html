@@ -6,68 +6,7 @@
     <title>任务管理系统企业用户</title>
     <script src="/static/js/jquery-3.5.1.min.js"></script>
     <script src="/static/js/companyJs.js"></script>
-    <style>
-        html {
-            font-family: sans-serif;
-            -ms-text-size-adjust: 100%;
-            -webkit-text-size-adjust: 100%;
-        }
-
-        body {
-            margin: 10px;
-        }
-
-        table {
-            border-collapse: collapse;
-            border-spacing: 0;
-        }
-
-        td, th {
-            padding: 0;
-        }
-
-        .pure-table {
-            border-collapse: collapse;
-            border-spacing: 0;
-            empty-cells: show;
-            border: 1px solid #cbcbcb;
-        }
-
-        .pure-table caption {
-            color: #000;
-            font: italic 85%/1 arial, sans-serif;
-            padding: 1em 0;
-            text-align: center;
-        }
-
-        .pure-table td, .pure-table th {
-            border-left: 1px solid #cbcbcb;
-            border-width: 0 0 0 1px;
-            font-size: inherit;
-            margin: 0;
-            overflow: visible;
-            padding: .5em 1em;
-        }
-
-        .pure-table thead {
-            background-color: #e0e0e0;
-            color: #000;
-            text-align: left;
-            vertical-align: bottom;
-        }
-
-        .pure-table td {
-            background-color: transparent;
-        }
-
-        .pure-table-bordered td {
-            border-bottom: 1px solid #cbcbcb;
-        }
-
-        .pure-table-bordered tbody > tr:last-child > td {
-            border-bottom-width: 0;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="/static/css/table.css"/>
 </head>
 <body>
 公司名称:<h1>{{ companyHtml.name }}</h1>
@@ -80,9 +19,10 @@
 
 <br/>
 
-
+<button>编辑公司信息</button>
 <button name="dep">部门管理</button>
 <button name="recruitment">招聘</button>
+<button name="project">项目管理</button>
 
 
 <div class="dep" style="display:none">
@@ -129,11 +69,11 @@
 
 
         <tbody>
-         <datalist id="typelist">
-                        {% for typeid in types_list %}
-                            <option>{{ typeid.name }}</option>
-                        {% endfor %}
-                    </datalist>
+        {#        <datalist id="typelist">#}
+        {#            {% for typeid in types_list %}#}
+        {#                <option>{{ typeid.name }}</option>#}
+        {#            {% endfor %}#}
+        {#        </datalist>#}
         {% for user in page_User_Html.all %}
             <tr>
                 <td>{{ user.name }}</td>
@@ -153,8 +93,20 @@
                 <td>{{ user.creatTime|date:"Y-m-d" }}</td>
                 <td>
 
-                    <input autocomplete="off" onchange="getCompany()" type="text" name="type" list="typelist"
-                           placeholder="选择部门"><br/>
+{#                    <input autocomplete="off" type="text" name="type" list="typelist"#}
+{#                           placeholder="选择部门"><br/>#}
+                    <select name="depSelect" >
+                        <option  selected="selected" disabled="disabled"  style='display: none ' value=''>选择部门</option>
+                        {% for typeid in types_list %}
+                            <option  >{{ typeid.name }}</option>
+                        {% endfor %}
+                    </select>
+
+
+{#                    <select id="group" value="1">#}
+{#                        <option value="1">Dimond</option>#}
+{#                        <option value="2">vertical</option>#}
+{#                    </select>#}
 
                 </td>
                 <td>

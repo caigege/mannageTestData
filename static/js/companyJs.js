@@ -93,14 +93,37 @@ $(document).ready(function () {
     $("button[name='add']").click(function () {
 
         let id = $(this).val()
+        let dep=$(this).parent().parent().find("select option:selected").text()
+        let bool=(id+dep).indexOf("&")!=-1
+        if(bool||dep=="选择部门"){
+            alert("输入错误："+bool+"选择部门")
+            return
+        }
+//        知识点
+// str.indexOf(res) != -1
+// str 存在的字符串(长的) res 验证的字符串(短的) true 包含 false 不包含
+
+// str.search(res) != -1
+// str 存在的字符串(长的) res 验证的字符串(短的) true 包含 false 不包含
+
         console.log("id:"+id)
+        console.log("dep:"+dep)
+
         {
             // 添加员工
 
         }
-        $.ajax({
-            url: "/addEmp/" + id, success: function (result) {
 
+
+
+        $.ajax({
+            url: "/addEmp/" +id+"&"+dep,
+            error:function(e){
+              alert("错误：",e)
+            },
+            // type:
+            success: function (result) {
+            alert("成功"+result['message'])
 
             }
 
