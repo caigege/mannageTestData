@@ -7,6 +7,7 @@ from django.shortcuts import render, redirect
 
 from company.models import Company,department
 from login.models import User
+from employee.models import emp
 
 
 def  fristPage(request):
@@ -134,8 +135,8 @@ def getVuale(table, field, fieldObject):
     :param fieldObject: 对象
     :return:
     '''
-    print("getVuale-fieldObject: " + fieldObject)
-    checkObject = table + ".objects.get(" + field + "=" + fieldObject + ")"
+    print("getVuale-fieldObject: " , fieldObject)
+    checkObject = table + ".objects.get(" + field + "=" + str(fieldObject) + ")"
 
     print(checkObject)
     result = eval(checkObject)

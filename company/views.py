@@ -1,10 +1,13 @@
+# -*- coding: UTF-8 -*-
 # Create your views here.
 import json
 import time
+from datetime import datetime
 
 from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
+from django.db.utils import IntegrityError
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
@@ -14,7 +17,52 @@ from employee.models import emp
 from login import views
 from login.models import User
 from login.views import auth
+from decimal import Decimal
+from datetime import datetime
 
+def checkFormat(lists: list):
+    '''
+    检查Decimal datetime
+    :param lists:
+    :return:
+    '''
+    for liss in lists:
+        for lissK in liss.keys():
+           value=liss.get(lissK)
+           # print("checkFormat: ",type(value))
+           if isinstance(value,Decimal):
+               liss[lissK]=str(value)
+
+           elif isinstance(value,datetime):
+               liss[lissK] = value.strftime("%Y-%m-%d %H:%M:%S")
+
+    return lists
+
+def getEmp(request):
+    '''
+    获取员工
+    :param request:
+    :return:
+    '''
+    company = companyGet(request)
+    emps = views.getAllVuale("emp", "companyId", str(company.id))
+    ret = serializers.serialize("python", emps)
+
+    result = getArray(ret, "fields")
+    print("getEmp result:",result)
+    # 获取部门名字
+    for res in  result:
+        print(res['department'])
+        re=views.getVuale("department","id",res['department'])
+        res['department']=re.name
+
+    # print("getEmp - resutl： ", type(result))
+    resultOK = json.dumps(checkFormat(result))
+    # resultOK.encode('utf-8')
+    # print("this getEmp")
+
+    # return HttpResponse(resultOK,content_type="charset=utf-8")
+    return JsonResponse(resultOK,safe=False)
 
 def getDep(request):
     '''
@@ -34,9 +82,8 @@ def getDep(request):
 
 def departmentsGetResultAll(request):
     '''
-    返回部门全部列表对象
     :param request:
-    :return:
+    :return:返回部门全部列表对象
     '''
     departments = departmentsGet(request)
     # 知识点 serialize json 参数 返回str  python 返回dict
@@ -57,6 +104,11 @@ def departmentsGet(request):
 
 
 def companyGet(request):
+    '''
+    获取公司登录对象
+    :param request:
+    :return:
+    '''
     accout = request.session.get("user")
     company = views.getVuale("Company", "account", accout)
     return company
@@ -134,12 +186,6 @@ def addDep(request):
 
     departmentJp = views.check("department", "name", cpat)
 
-    # try:
-    #     judge = department.objects.get(name='算力科技-123')
-    #
-    #     departmentJp=True
-    # except:
-    #     departmentJp = False
 
     print("departmentJp ：", departmentJp)
     if (departmentJp):
@@ -153,7 +199,6 @@ def addDep(request):
     msg = {"message": "success: 添加成功"}
 
     return JsonResponse(msg)
-    # return render(request, "model/success.html", {"success_msg": "depname :" + depname})
 
 
 @auth
@@ -167,7 +212,7 @@ def addEmp(request, id):
     accout = request.session.get("user")
     company = views.getVuale("Company", "account", accout)
 
-    idsStrs=str(id).split("&")
+    idsStrs = str(id).split("&")
     if (len(idsStrs) != 2):
         mgs = {"message": "非法请求"}
         return JsonResponse(mgs, charset='utf-8')
@@ -176,22 +221,22 @@ def addEmp(request, id):
     # print("dep:"+dep);
     # print()
     empId = idsStrs[0]
-    dep=idsStrs[1]
+    dep = idsStrs[1]
     # 判断部门是否存在
     department
-    depJ=views.check("department","name",company.name+"-"+dep)
-    print("depJ :",depJ)
-    if(not depJ):
+    depJ = views.check("department", "name", company.name + "-" + dep)
+    print("depJ :", depJ)
+    if (not depJ):
         mgs = {"message": "部门不存在"}
         return JsonResponse(mgs, charset='utf-8')
-    departmentObject=views.getVuale("department","name","\'"+company.name+"-"+dep+"\'")
+    departmentObject = views.getVuale("department", "name", "\'" + company.name + "-" + dep + "\'")
 
     users = views.getVuale("User", "id", empId)
     # Todo 未考虑用户不存在情况
     print("name： " + users.name)
     employee = {}
     employee['gender'] = users.gender
-    if(users.name=="" or users.name is None):
+    if (users.name == "" or users.name is None):
 
         employee['name'] = str(users.phone)
     else:
@@ -211,21 +256,25 @@ def addEmp(request, id):
     employee['identityCard'] = users.identityCard
     employee['birthday'] = users.birthday
 
-    employee['entryTime'] ="\'" +time.strftime('%Y-%m-%d %H:%M:%S')+"\'"
-    empJ = createData(employee, "emp",obj=company)
+    employee['entryTime'] = "\'" + time.strftime('%Y-%m-%d %H:%M:%S') + "\'"
+    objs = {"company": company, "emp": emp}
+    empJ = createData(employee, "emp", objs)
 
     if not empJ:
-        mgs = {"message": empJ + "1添加失败"}
+        mgs = {"message": str(empJ) + "添加失败"}
     else:
-        User.objects.filter(id=empId).update(postStatus=2)
-        mgs = {"message": empJ + "2添加成功"}
+        if empJ == "员工已存在":
+            mgs = {"message": str(empJ)}
+        else:
+            User.objects.filter(id=empId).update(postStatus=2)
+            mgs = {"message": str(empJ) + "添加成功"}
     #     return JsonResponse(mgs)
     # print("empId :"+id)
     # mgs={"dep":id}
     return JsonResponse(mgs, charset='utf-8')
 
 
-def createData(data: dict, table,obj=None):
+def createData(data: dict, table, objs=None):
     '''
     添加单条数据
     :param data:
@@ -236,15 +285,24 @@ def createData(data: dict, table,obj=None):
     dataStr = ""
     for k in keylist:
         dataStr += k + "=" + str(data.get(k)) + ","
-    dataStr = dataStr[1:len(dataStr) - 1]
-    print("dataStr: " + dataStr)
+    dataStr = dataStr[0:len(dataStr) - 1]
+
     dataStr = table + ".objects.create(" + dataStr + ")"
+    print("dataStr: " + dataStr)
     try:
-        exec(dataStr,obj)
+        if (objs is not None):
+            try:
+                exec(dataStr, objs)
+            except IntegrityError:
+                return "员工已存在"
+
+        else:
+            exec(dataStr)
         return True
     except ObjectDoesNotExist:
+
         return False
-    print(dataStr)
+    # print(dataStr)
 
 
 @auth
