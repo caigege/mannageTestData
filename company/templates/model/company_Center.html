@@ -42,14 +42,21 @@
                 <th>入职时间</th>
                 <th>生日</th>
                 <th>身份证</th>
-
-
-
+                <th>操作</th>
             </tr>
             </thead>
             <tbody id="empTbody">
             </tbody>
         </table>
+    </div>
+<div id='postChange' style="display: none">
+        <h2>选择岗位</h2>
+        <select id="postSele">
+    <option></option>
+        </select>
+    <br/>
+    <button class="post" id="postSave">保存</button>
+    <button class="post" id="postCancel">取消</button>
     </div>
 </div>
 
@@ -121,20 +128,20 @@
                 <td>{{ user.creatTime|date:"Y-m-d" }}</td>
                 <td>
 
-{#                    <input autocomplete="off" type="text" name="type" list="typelist"#}
-{#                           placeholder="选择部门"><br/>#}
-                    <select name="depSelect" >
-                        <option  selected="selected" disabled="disabled"  style='display: none ' value=''>选择部门</option>
+                    {#                    <input autocomplete="off" type="text" name="type" list="typelist"#}
+                    {#                           placeholder="选择部门"><br/>#}
+                    <select name="depSelect">
+                        <option selected="selected" disabled="disabled" style='display: none ' value=''>选择部门</option>
                         {% for typeid in types_list %}
-                            <option  >{{ typeid.name }}</option>
+                            <option>{{ typeid.name }}</option>
                         {% endfor %}
                     </select>
 
 
-{#                    <select id="group" value="1">#}
-{#                        <option value="1">Dimond</option>#}
-{#                        <option value="2">vertical</option>#}
-{#                    </select>#}
+                    {#                    <select id="group" value="1">#}
+                    {#                        <option value="1">Dimond</option>#}
+                    {#                        <option value="2">vertical</option>#}
+                    {#                    </select>#}
 
                 </td>
                 <td>
@@ -163,8 +170,11 @@
             <a href="/newList/{{ types }}/{{ p_Html|add:1 }}/">下一页</a>
         {% endif %}
 
-        <a href="/newList/{{ types }}/{{ pTotal_Html }}/">尾页</a></div>
+        <a href="/newList/{{ types }}/{{ pTotal_Html }}/">尾页</a>
+    </div>
+
 </div>
-</div>
+
+
 </body>
 </html>

@@ -7,29 +7,7 @@ $(document).ready(function () {
     //加载后产生的元素，要在第一次加载的元素 　　$("父级元素").on("事件","当前元素",function(){
     // 如果 父级元素 还不行 就用 $(document).on("事件","当前元素",function(){})
     // $('body') .on("事件","当前元素",function(){})
-    $("#DepTbody").on('click', $("button[name='addPost']"), function () {
-    // $("button[name='addPost']").on('click', function () {
 
-        //添加岗位
-        // alert($(this).parent().parent().children().first())
-
-        // var word = prompt("请输入岗位名字2-20", "")
-        // if (word) {
-        //
-        //     // alert("word :" + word)
-        //     if (word.length <= 20 & word.length > 0) {
-        //
-        //
-        //
-        //
-        //     } else {
-        //         alert("word :不要超过20")
-        //     }
-        //
-        // } else {
-        //     alert("请输入岗位名字")
-        // }
-    })
 
     $("button[name='empCheck']").click(function () {
         //查询员工
@@ -63,11 +41,39 @@ $(document).ready(function () {
                         "<td>" + JSONdata[j].entryTime + "</td>" +
                         "<td>" + JSONdata[j].birthday + "</td>" +
                         "<td>" + JSONdata[j].identityCard + "</td>" +
+                        "<td><button name='changePost'>调整岗位</button></td>" +
                         "</tr>"
                     )
-
                 }
 
+                $('button[name="changePost"]').click(function () {
+                    var department = $(this).parent().parent().children().eq(5).text()
+                    $('#postChange').attr("style", "display:block")
+                    // alert("department :"+department)
+                    $(document).ready(function () {
+                        $('button[name="postCancel"]').click(function () {
+                            alert(1)
+                            $('#postChange').attr("style", "display:none")
+                        })
+                    })
+                    $.get("/company/getPost/", {"department": department}, function (e) {
+                        // todo 2021.1.5
+                        // alert(data[0].postName)
+                        var JSONe = JSON.parse(e)
+                        // alert(typeof e)
+                        $("#postSele").empty()
+                        for (var i = 0; i < JSONe.length; i++) {
+
+
+                            $("#postSele").append(
+                                "<option>" + JSONe[0].postName + "</option>"
+                            )
+                        }
+                        // alert(data)
+                    })
+
+
+                })
 
             },
             "json"//
@@ -79,7 +85,6 @@ $(document).ready(function () {
     $("button[name='addDep']").click(function () {
 
 
-        // alert(1)
         //  添加部门
         let depname = $("#depName").val();
         if (depname == "" || $.trim(depname).length == 0) {
@@ -90,17 +95,11 @@ $(document).ready(function () {
 
 
         // todo token验证未处理
-        // var csrftoken = getCookie("csrftoken");
-        // var csrftoken = Cookies.get('csrftoken');
         $.ajax({
             url: "/company/addDep/",
             type: "POST",
-            // header:{
-            //      "X-CSRFToken": getCookie("csrftoken")
-            // },
             data: {
                 depName: depname,
-                // csrfmiddlewaretoken: '{{ csrf_token }}'
             },
 
             success: function (resulet) {
@@ -113,8 +112,6 @@ $(document).ready(function () {
 
     $("button[name='recruitment']").click(function () {
         //招聘
-        // $(".dep").attr("style", "display:none;")
-        // $(".recruitment").attr("style", "display:block;")
         showOption($(".recruitment"))
 
 
@@ -124,9 +121,6 @@ $(document).ready(function () {
     $("button[name='dep']").click(function () {
 
         // 部门管理
-
-        // $(".dep").attr("style", "display:block;")
-        // $(".recruitment").attr("style", "display:none;")
         showOption($(".dep"))
         getdep();
 
@@ -192,33 +186,58 @@ $(document).ready(function () {
 
     }
 
+    function checkDep(data) {
+        $("#DepTbody").empty()
+
+        for (j = 0; j < data.length; j++) {
+            var postname = "";
+            if (data[j]['postName'] == "暂无") {
+                postname = "暂无"
+            } else {
+                let dataObj = data[j]['postName'].split(",")
+                for (var dataChild in dataObj) {
+                    console.log("dataChild", dataChild)
+                    postname += dataObj[dataChild].split("*")[1] + ","
+                }
+                postname = postname.substring(0, (postname.length - 1))
+            }
+            $("#DepTbody").append("<tr>" +
+                "<td>" + data[j]['name'] + "</td>" +
+                "<td>" + postname + "</td>" +
+                "<td>" + "<button name='addPost' >添加岗位</button>" + "</td>" +
+                "</tr>"
+            )
+
+        }
+    }
+
     function getdep() {
         // 查询部门
         $.get(
             "/company/getDep/",
             function (data, status) {
-                //知识点 js 对象类型
-                // console.log("data type", typeof data)
-                // console.log("data type: " + data[0]['name'])
-                // console.log("data type: " + data.length)
-                // let len = data.length
-                $("#DepTbody").empty()
-                for (j = 0; j < data.length; j++) {
-                    $("#DepTbody").append("<tr>" +
-                        // "<td name=n_"+data[j]['id']+">" + data[j]['name'] + "</td>" +
-                        "<td name=n_"+1+">" + data[j]['name'] + "</td>" +
-                        "<td>" + data[j]['name'] + "</td>" +
-                        // "<td>" + "<input type='button' name='addPost' value='添加岗位'>" + "</td>" +
-                        "<td>" + "<button name='addPost' >添加岗位</button>" + "</td>" +
-                        "</tr>"
-                    )
 
-             }
-             $(document).ready(function(){
-                 $("button[name='addPost']").click(function () {
-                    alert( $(this))
-                 })
-             })
+                checkDep(data);
+                $(document).ready(function () {
+                    $("button[name='addPost']").click(function () {
+
+                        var depName = $(this).parent().parent().children().first().text()
+
+                        var word = prompt("请输入岗位名字2-20", "")
+
+                        if (word.length <= 20 & word.length > 1) {
+                            $.post("/company/addPost/", {"depName": depName, "postName": word}, function (data) {
+                                // console.log(data.message)
+                                alert(data.message)
+                                getdep()
+
+                            })
+
+                        } else {
+                            alert("word :请输入岗位名字2-20字")
+                        }
+                    })
+                })
 
             },
             "json"//

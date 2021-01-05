@@ -5,7 +5,8 @@ import time
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render, redirect
 
-from company.models import Company,department
+from company.models import Company,department,post
+
 from login.models import User
 from employee.models import emp
 
@@ -87,6 +88,7 @@ def auth(func):
         return func(request,*args,**kwargs)
     return inner
 
+
 def postCheck(func):
     # 请求验证
     def inner(request,*args,**kwargs):
@@ -136,18 +138,42 @@ def getVuale(table, field, fieldObject):
     :return:
     '''
     print("getVuale-fieldObject: " , fieldObject)
-    checkObject = table + ".objects.get(" + field + "=" + str(fieldObject) + ")"
+    checkObject = table + ".objects.get(" + field + "=\'" + str(fieldObject) + "\')"
 
     print(checkObject)
-    result = eval(checkObject)
-    print("result:" + str(result))
+    try:
+        result = eval(checkObject)
+    except:
+        checkObject = table + ".objects.get(" + field + "=" + str(fieldObject) + ")"
+        result = eval(checkObject)
+    # print("result:" + str(result))
+
+    return result
+
+
+
+def getVualeAllObj(table, field, fieldObject,objs):
+    '''
+    获取单个对象 传对象 外键
+    :param table: String：  models. class 类名
+    :param field: String 字段名
+    :param fieldObject: 对象
+    :return:
+    '''
+    # print("getVuale-fieldObject: " , fieldObject)
+    checkObject = table + ".objects.filter(" + field + "=" + str(fieldObject) + ")"
+
+    # print(checkObject)
+
+    result = eval(checkObject,objs)
+    # print("result:" + str(result))
 
     return result
 
 
 def getAllVuale(table, field, fieldObject):
     '''
-    获取单个对象
+    获取单个对象或多个对象(数据库行）
     :param table: String：  models. class 类名
     :param field: String 字段名
     :param fieldObject: 对象
@@ -155,9 +181,9 @@ def getAllVuale(table, field, fieldObject):
     '''
     checkObject = table + ".objects.filter(" + field + "=" + fieldObject + ")"
 
-    print(checkObject)
+    # print(checkObject)
     result = eval(checkObject)
-    print("result:" + str(result))
+    # print("result:" + str(result))
 
     return result
 

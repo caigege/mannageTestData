@@ -1,12 +1,17 @@
-lis = [{"gender":  True, "name": "13557376460", "education": "we", "phone": "13557376460", "companyId": 1, "level": 1,
-        "department": 2, "salary": "0.00", "email": None, "headPortrait": "", "identityCard": None, "birthday": None,
-        "post": None, "entryTime": "2021-01-04 01:48:54"},
-       {"gender": True, "name": "15583436117", "education": "eee", "phone": "15583436117", "companyId": 1, "level": 1,
-        "department": 3, "salary": "0.00", "email": None, "headPortrait": "", "identityCard": None, "birthday": None,
-        "post": None, "entryTime": "2021-01-04 01:57:31"}]
+list=[]
 
-for i in lis:
-    print(i["name"])
+if(list==[]):
+    print(1)
+
+# lis = [{"gender":  True, "name": "13557376460", "education": "we", "phone": "13557376460", "companyId": 1, "level": 1,
+#         "department": 2, "salary": "0.00", "email": None, "headPortrait": "", "identityCard": None, "birthday": None,
+#         "post": None, "entryTime": "2021-01-04 01:48:54"},
+#        {"gender": True, "name": "15583436117", "education": "eee", "phone": "15583436117", "companyId": 1, "level": 1,
+#         "department": 3, "salary": "0.00", "email": None, "headPortrait": "", "identityCard": None, "birthday": None,
+#         "post": None, "entryTime": "2021-01-04 01:57:31"}]
+#
+# for i in lis:
+#     print(i["name"])
 
 # from decimal import Decimal
 

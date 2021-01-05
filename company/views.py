@@ -3,6 +3,7 @@
 import json
 import time
 from datetime import datetime
+from decimal import Decimal
 
 from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
@@ -12,13 +13,68 @@ from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 
-from company.models import Company, department
+from company.models import Company, department, post
 from employee.models import emp
 from login import views
 from login.models import User
 from login.views import auth
-from decimal import Decimal
-from datetime import datetime
+
+@csrf_exempt
+def getPost(request):
+    depName = request.GET.get("department")
+    # depName = request.POST.get("depName")
+    print("getPost depName:",depName)
+    dep = views.getVuale("department", "name", depName)
+    objs={"post":post,"departmentId":dep}
+    postObj=views.getVualeAllObj("post", "departmentId","departmentId",objs)
+    resultList=[]
+    if (postObj.count() == 0):
+        # postName
+        resultList.append({ "postName": "暂无"})
+    else:
+        for dep in postObj:
+            # depNm += str(dep.name) + ","
+            resultList.append({"postName": dep.name})
+        # depNm = depNm[0:len(depNm) - 1]
+    resultOK = json.dumps(resultList)
+
+    return  HttpResponse(resultOK, charset='utf-8')
+
+
+
+
+
+
+@csrf_exempt
+def addPost(request):
+    '''
+    添加岗位
+    :param request:
+    :return:
+    '''
+    # company=companyGet(request)
+    depName = request.POST.get("depName")
+    postName = request.POST.get("postName")
+    # print("addPost :",depName,postName)
+    # print("addPost :",depName)
+    # 获取外键
+    depK = views.getVuale("department", "name", depName)
+    postObj = {}
+    postObj["name"] = "\'" + depName + "*" + postName + "\'"
+    postObj["departmentId"] = "depK"
+
+    objs = {"depK": depK, "post": post}
+    result = createData(postObj, "post", objs)
+    print("result", result)
+    if (result is True):
+        msg = {"message": "添加成功"}
+    elif (result == "已存在"):
+        msg = {"message": "已存在"}
+    else:
+        msg = {"message": "添加失败"}
+    # return JsonResponse(json.dumps(resultOK),safe=False)
+    return JsonResponse(msg, charset='utf-8')
+
 
 def checkFormat(lists: list):
     '''
@@ -28,15 +84,16 @@ def checkFormat(lists: list):
     '''
     for liss in lists:
         for lissK in liss.keys():
-           value=liss.get(lissK)
-           # print("checkFormat: ",type(value))
-           if isinstance(value,Decimal):
-               liss[lissK]=str(value)
+            value = liss.get(lissK)
+            # print("checkFormat: ",type(value))
+            if isinstance(value, Decimal):
+                liss[lissK] = str(value)
 
-           elif isinstance(value,datetime):
-               liss[lissK] = value.strftime("%Y-%m-%d %H:%M:%S")
+            elif isinstance(value, datetime):
+                liss[lissK] = value.strftime("%Y-%m-%d %H:%M:%S")
 
     return lists
+
 
 def getEmp(request):
     '''
@@ -49,12 +106,12 @@ def getEmp(request):
     ret = serializers.serialize("python", emps)
 
     result = getArray(ret, "fields")
-    print("getEmp result:",result)
+    # print("getEmp result:",result)
     # 获取部门名字
-    for res in  result:
-        print(res['department'])
-        re=views.getVuale("department","id",res['department'])
-        res['department']=re.name
+    for res in result:
+        # print(res['department'])
+        re = views.getVuale("department", "id", res['department'])
+        res['department'] = re.name
 
     # print("getEmp - resutl： ", type(result))
     resultOK = json.dumps(checkFormat(result))
@@ -62,7 +119,8 @@ def getEmp(request):
     # print("this getEmp")
 
     # return HttpResponse(resultOK,content_type="charset=utf-8")
-    return JsonResponse(resultOK,safe=False)
+    return JsonResponse(resultOK, safe=False)
+
 
 def getDep(request):
     '''
@@ -70,14 +128,38 @@ def getDep(request):
     :param request:
     :return:
     '''
-    result = departmentsGetResultAll(request)
+    # departmentsGetResultAll(request)
+    result = departmentsGet(request)
+    resultList = []
+    for res in result:
+        # print("getDep res:",res.id)
+        # 部门
+        resDict = {"post": post, "departmentId": res}
+        # 岗位
+        postObj = views.getVualeAllObj("post", "departmentId", "departmentId", resDict)
+        # 获取岗位名字组成字符串
+        # print("departmentObj type: ",type(departmentObj))
+        # print("departmentObj type: ",departmentObj)
+        depNm = ""
+        if (postObj.count() == 0):
+            # postName
+            resultList.append({"name": res.name, "postName": "暂无"})
+        else:
+            for dep in postObj:
+                depNm += str(dep.name) + ","
+            depNm = depNm[0:len(depNm) - 1]
+            resultList.append({"name": res.name, "postName": depNm})
 
-    resultOK = json.dumps(result)
-    print("resutl： ", type(result))
-    print("resutl： ", result)
+    # print("getDep resultList: ",resultList)
+    # 添加到结果中
+    # print("departmentObj getDep",departmentObj)
+    # result.id
+    # ret = serializers.serialize("python", result)
+    resultOK = json.dumps(resultList)
+    # # print("getDep resutl： ", type(result))
+    # print("getDep resultOK： ", result)
 
     return HttpResponse(resultOK)
-    # return JsonResponse(msg)
 
 
 def departmentsGetResultAll(request):
@@ -88,8 +170,10 @@ def departmentsGetResultAll(request):
     departments = departmentsGet(request)
     # 知识点 serialize json 参数 返回str  python 返回dict
     ret = serializers.serialize("python", departments)
+    # print("departmentsGetResultAll ret :",ret)
     result = getArray(ret, "fields")
     return result
+
 
 
 def departmentsGet(request):
@@ -125,10 +209,7 @@ def getArray(checkResult, *fied: str):
     # todo 未考虑 list 为空的情况
     resultList = []
     for li in list:
-        # print("li: ",li)
-        # ls = next(list)
-        # print("ls :", ls)
-        # dic = traverse(li, fied)
+
         dic = li.get(fied[0])
 
         resultList.append(dic)
@@ -141,11 +222,11 @@ def traverse(list, *fied: str):
     遍历数据库查询结果列表 暂时不用 
     :return: 
     '''
-    print("fied, ", fied)
+    # print("fied, ", fied)
 
     dic = {}
     for fiedChild in fied[0]:
-        print("fiedChild, ", fiedChild)
+        # print("fiedChild, ", fiedChild)
         dic[fiedChild] = list.get(fiedChild)
 
     return dic  # fiedChild
@@ -161,12 +242,12 @@ def addDep(request):
 
     # 验证是否为空
     depnum = len(depname.replace(" ", "")) != 0
-    print(depnum)
+    # print(depnum)
     # 验证是否包含"-"
     dep_ = "-" not in depname
-    print(depnum, dep_)
+    # print(depnum, dep_)
     if (not depnum or not dep_):
-        print(111111)
+        # print(111111)
         #  知识点 跨模块用html  不适用于ajax de render ajax 接收到的是字符串
         # return redirect('/model/erro/loginErro.html', {'error_msg': '类型异常'})
         msg = {"message": "输入类型"}
@@ -182,12 +263,11 @@ def addDep(request):
     # companyID=company.id
     # print("companyID ；",companyID)
     cpat = company.name + "-" + depname
-    print(cpat)
+    # print(cpat)
 
     departmentJp = views.check("department", "name", cpat)
 
-
-    print("departmentJp ：", departmentJp)
+    # print("departmentJp ：", departmentJp)
     if (departmentJp):
         msg = {"message": "Erro: depname 重复"}
         return JsonResponse(msg)
@@ -225,7 +305,7 @@ def addEmp(request, id):
     # 判断部门是否存在
     department
     depJ = views.check("department", "name", company.name + "-" + dep)
-    print("depJ :", depJ)
+    # print("depJ :", depJ)
     if (not depJ):
         mgs = {"message": "部门不存在"}
         return JsonResponse(mgs, charset='utf-8')
@@ -233,7 +313,7 @@ def addEmp(request, id):
 
     users = views.getVuale("User", "id", empId)
     # Todo 未考虑用户不存在情况
-    print("name： " + users.name)
+    # print("name： " + users.name)
     employee = {}
     employee['gender'] = users.gender
     if (users.name == "" or users.name is None):
@@ -274,7 +354,7 @@ def addEmp(request, id):
     return JsonResponse(mgs, charset='utf-8')
 
 
-def createData(data: dict, table, objs=None):
+def createData(data: dict, table, objs: dict = None):
     '''
     添加单条数据
     :param data:
@@ -288,19 +368,19 @@ def createData(data: dict, table, objs=None):
     dataStr = dataStr[0:len(dataStr) - 1]
 
     dataStr = table + ".objects.create(" + dataStr + ")"
-    print("dataStr: " + dataStr)
+    # print("dataStr: " + dataStr)
     try:
         if (objs is not None):
             try:
                 exec(dataStr, objs)
             except IntegrityError:
-                return "员工已存在"
+                return "已存在"
 
         else:
             exec(dataStr)
         return True
     except ObjectDoesNotExist:
-
+        print()
         return False
     # print(dataStr)
 
@@ -328,7 +408,7 @@ def companyC(request):
     page_User_Html = pagtor.page(p_Html).object_list  # 返回对应页码
 
     page_range_Html = pagtor.page_range
-    print(page_range_Html)
+    # print(page_range_Html)
     types = "user"
 
     types_list = departmentsGetResultAll(request)

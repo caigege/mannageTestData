@@ -29,5 +29,5 @@ class post(models.Model):
     岗位
     '''
     name = models.CharField("部门", max_length=100, null=True, unique=True)
-    companyId = models.ForeignKey("company.department", on_delete=models.DO_NOTHING, verbose_name="公司部门id")
+    departmentId = models.ForeignKey("company.department", on_delete=models.DO_NOTHING, verbose_name="公司部门id")
     models.AutoField
