@@ -47,7 +47,8 @@ INSTALLED_APPS = [
     'model.apps.ModelConfig',
     'L1_Task_create',
     'company',
-    'employee'
+    'employee',
+    'business'
 
 
 ]

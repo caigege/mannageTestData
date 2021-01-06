@@ -24,7 +24,29 @@
 <button name="recruitment">招聘</button>
 <button name="project">项目管理</button>
 <button name="empCheck">员工</button>
+<div class="project" style="display:none">
+    <div>
+        <table class="pure-table pure-table-bordered">
+            <thead>
+            <tr>
+                <th>序号</th>
+                <th>项目名</th>
+                <th>项目简介</th>
+                <th>项目进度</th>
+                <th>来源</th>
+                <th>状态</th>
+                <th>备注</th>
+                <th>操作</th>
 
+            </tr>
+            </thead>
+            <tbody id="projectTbody">
+            </tbody>
+        </table>
+    </div>
+{#<button id="creatBusiness">创建项目</button>#}
+
+</div>
 <div class="emp" style="display:none">
     <div>
         <table class="pure-table pure-table-bordered">
@@ -49,14 +71,14 @@
             </tbody>
         </table>
     </div>
-<div id='postChange' style="display: none">
+    <div id='postChange' style="display: none">
         <h2>选择岗位</h2>
         <select id="postSele">
-    <option></option>
+            {#    <option ></option>#}
         </select>
-    <br/>
-    <button class="post" id="postSave">保存</button>
-    <button class="post" id="postCancel">取消</button>
+        <br/>
+        <button class="post" id="postSave">保存</button>
+        <button class="post" id="postCancel">取消</button>
     </div>
 </div>
 

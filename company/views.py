@@ -18,19 +18,65 @@ from employee.models import emp
 from login import views
 from login.models import User
 from login.views import auth
+from business import Test_Data
+
+def getProject(request):
+    company = companyGet(request)
+    # obj = {"companyId": company}
+    # res = views.getVualeAllObj("business", "companyId", "companyId", obj)
+    # res
+    # result=Test_Data.resultoK
+    lists=Test_Data.resultoKstr
+    # s=serializers.serialize()
+    # result=json.dumps(s).encode("utf-8")
+    # print("getProject result：",result)
+    # return JsonResponse(lists,safe=False,json_dumps_params={'ensure_ascii':False})
+    return JsonResponse(lists,safe=False)
+
+
+def update(table, keyName, key, objs=None, **dicts):
+    updata_str = table + ".objects.filter(" + keyName + "=" + key + ").update("
+
+    if objs is None:
+        keylist = dicts.keys()
+        dataStr = ""
+        for k in keylist:
+            dataStr += k + "=" + str(dicts.get(k)) + ","
+        dataStr = dataStr[0:len(dataStr) - 1]
+        updata_str = updata_str + dataStr + ")"
+        return eval(updata_str)
+
+    else:
+
+        return "待处理"
+
+
+@csrf_exempt
+def updatePost(request):
+    phone = request.POST.get("phone")
+    postnanme = request.POST.get("postnanme")
+    print("phone", phone, postnanme)
+    reslut = update("emp", "phone", str(phone), objs=None, post="\'" + postnanme + "\'")
+    if reslut == 1:
+        msg = {"message": "更新成功"}
+    else:
+        msg = {"message": "更新失败"}
+    sm = json.dumps(msg)
+    return HttpResponse(sm)
+
 
 @csrf_exempt
 def getPost(request):
     depName = request.GET.get("department")
     # depName = request.POST.get("depName")
-    print("getPost depName:",depName)
+    print("getPost depName:", depName)
     dep = views.getVuale("department", "name", depName)
-    objs={"post":post,"departmentId":dep}
-    postObj=views.getVualeAllObj("post", "departmentId","departmentId",objs)
-    resultList=[]
+    objs = {"post": post, "departmentId": dep}
+    postObj = views.getVualeAllObj("post", "departmentId", "departmentId", objs)
+    resultList = []
     if (postObj.count() == 0):
         # postName
-        resultList.append({ "postName": "暂无"})
+        resultList.append({"postName": "暂无"})
     else:
         for dep in postObj:
             # depNm += str(dep.name) + ","
@@ -38,11 +84,7 @@ def getPost(request):
         # depNm = depNm[0:len(depNm) - 1]
     resultOK = json.dumps(resultList)
 
-    return  HttpResponse(resultOK, charset='utf-8')
-
-
-
-
+    return HttpResponse(resultOK, charset='utf-8')
 
 
 @csrf_exempt
@@ -175,7 +217,6 @@ def departmentsGetResultAll(request):
     return result
 
 
-
 def departmentsGet(request):
     '''
     查询部门全部对象
@@ -209,7 +250,6 @@ def getArray(checkResult, *fied: str):
     # todo 未考虑 list 为空的情况
     resultList = []
     for li in list:
-
         dic = li.get(fied[0])
 
         resultList.append(dic)

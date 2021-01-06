@@ -28,6 +28,7 @@ from  model import views
 from L1_Task_create import views as L1_Task_createView
 from login import views as loginView
 from company import views as companyView
+from business import views as businessView
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 # from  login import views
 
@@ -50,6 +51,9 @@ urlpatterns = [
     path('company/empGet/', companyView.getEmp),
     path('company/addPost/', companyView.addPost),
     path('company/getPost/', companyView.getPost),
+    path('company/updatePost/', companyView.updatePost),
+    path('company/getProject/', companyView.getProject),
+    path('business/', businessView.toBusiness),
 
 
     # path('sys/login/', loginView.fristPage, name='login'),

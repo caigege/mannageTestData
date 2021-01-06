@@ -137,10 +137,10 @@ def getVuale(table, field, fieldObject):
     :param fieldObject: 对象
     :return:
     '''
-    print("getVuale-fieldObject: " , fieldObject)
+    # print("getVuale-fieldObject: " , fieldObject)
     checkObject = table + ".objects.get(" + field + "=\'" + str(fieldObject) + "\')"
 
-    print(checkObject)
+    # print(checkObject)
     try:
         result = eval(checkObject)
     except:
