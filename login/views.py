@@ -9,6 +9,7 @@ from company.models import Company,department,post
 
 from login.models import User
 from employee.models import emp
+from business.models import project
 
 
 def  fristPage(request):

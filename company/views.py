@@ -13,25 +13,28 @@ from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 
+from business import Test_Data
+from business.models import project
 from company.models import Company, department, post
 from employee.models import emp
 from login import views
 from login.models import User
 from login.views import auth
-from business import Test_Data
+
 
 def getProject(request):
     company = companyGet(request)
-    # obj = {"companyId": company}
-    # res = views.getVualeAllObj("business", "companyId", "companyId", obj)
+    obj = {"companyId": company,"project":project}
+    res = views.getVualeAllObj("project", "companyId", "companyId", obj)
     # res
     # result=Test_Data.resultoK
-    lists=Test_Data.resultoKstr
-    # s=serializers.serialize()
-    # result=json.dumps(s).encode("utf-8")
+    # lists = Test_Data.resultoKstr
+    s=serializers.serialize("python",res)
+    resultl = getArray(s, "fields")
+    result=json.dumps(resultl)
     # print("getProject result：",result)
-    # return JsonResponse(lists,safe=False,json_dumps_params={'ensure_ascii':False})
-    return JsonResponse(lists,safe=False)
+    return JsonResponse(result,safe=False,json_dumps_params={'ensure_ascii':False})
+    # return JsonResponse(result, safe=False)
 
 
 def update(table, keyName, key, objs=None, **dicts):
@@ -383,14 +386,11 @@ def addEmp(request, id):
     if not empJ:
         mgs = {"message": str(empJ) + "添加失败"}
     else:
-        if empJ == "员工已存在":
+        if empJ == "已存在":
             mgs = {"message": str(empJ)}
         else:
             User.objects.filter(id=empId).update(postStatus=2)
             mgs = {"message": str(empJ) + "添加成功"}
-    #     return JsonResponse(mgs)
-    # print("empId :"+id)
-    # mgs={"dep":id}
     return JsonResponse(mgs, charset='utf-8')
 
 

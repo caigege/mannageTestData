@@ -1,15 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" http-equiv="Cache" content="no-cache">
     <title>任务管理系统企业用户</title>
+    <script src="/static/js/jquery-3.5.1.min.js"></script>
+    <script src="/static/js/businessJs.js"></script>
+    <script type="text/javascript">{{ script }}('{{ mgs }}')</script>
+
 </head>
 <body>
-<div>
-    <form>
-        <input type="text">
+<button id="createBuniness">创建新项目</button>
+<div style="background-color: rgba(91,208,237,0.61)" id="detail">
+    <strong>项目名:</strong>
+    <p><span style="font-size: 20px " name="projectName"><b>{{ project.name }}</b></span></p><br/>
+    <strong>项目简介:</strong>
+    <p>{{ project.description }}</p><br/>
+    <strong>项目进度:</strong>&nbsp&nbsp&nbsp&nbsp&nbsp<span
+        style="color: rgba(206,34,201,0.87)">{{ project.schedule }}</span>
+    <button>刷新进度</button>
+    <br/>
+    <strong>来源:</strong>
+    <p>{{ project.source }}</p><br/>
+    <strong> 状态</strong>:
+    {% if project.state == 0 %}
+        <p style='background-color:navajowhite;    width: 200px;'>计划中</p>
+    {% elif project.state == 1 %}
+        <p style='background-color:orangered;    width: 200px;'>进行中</p>
+    {% elif project.state == 2 %}
+        <p style='background-color:green;   color: #fff; width: 200px;'>完成</p>
+    {% elif project.state == 3 %}
+        <p style='background-color:aliceblue;  color: #000000;  width: 200px;'>暂停</p>
+    {% elif project.state == 4 %}
+        <p style='background-color:grey;   color: #fff;  width: 200px;'>终止</p>
+    {% else %}
+        <p style='color:red;    width: 200px;'>异常</p>
+
+    {% endif %}
+    <br/>
+    <strong>备注</strong>:<br/>
+    <button id="resolve">分解任务</button>
+</div>
+<div id="createTaskDiv" style="display:none;">
+    分解任务
+
+    <form method="post">
+        <strong>项目名:</strong><input disabled value="1"><br/>
+        <strong>任务名:</strong><input><br/>
+        <strong>内容:</strong><input><br/>
+        <strong>工作耗时:</strong><input type="number"><br/>
+
+        <strong>任务策略:</strong>
+        <select name="strategy">
+            {#            {% for i in  %}#}
+            {#                <option onclick="f()" style="background-color: white;color:black; " value="1">普通</option>#}
+            {#                <option onmouseover="f()" style="background-color: orange;color:black; " value="2">执行者自行创建</option>#}
+            {#                <option onmouseleave="f()f()" style="background-color: blue;color:white; " value="3">1级管理安排</option>#}
+            {#                <option onmouseover="f()" style="background-color: darkviolet;color:white; " value="4">管理级安排</option>#}
+            {#                <option onmouseover="f()" style="background-color: red;color:black; " value="5">紧急</option>#}
+            <option style="background-color: white;color:black; " value="1">普通</option>
+            <option style="background-color: orange;color:black; " value="2">执行者自行创建</option>
+            <option style="background-color: blue;color:white; " value="3">1级管理安排</option>
+            <option style="background-color: darkviolet;color:white; " value="4">管理级安排</option>
+            <option style="background-color: red;color:black; " value="5">紧急</option>
+            {#            {% endfor %}#}
+        </select>
+        <br/>
+        <strong>任务级别:</strong><input><br/>
+
+        <strong>选择部门:</strong><input><br/>
+
+        <strong>任务指派:</strong><input><br/>
 
 
+    </form>
+
+</div>
+
+<div style="display:none;" id="createTable">
+    <form action="/business/create/" method="post">
+        项目名&nbsp&nbsp&nbsp : <input type="text" name="name" placeholder="项目名" maxlength="80"><br/>
+        项目简介: <textarea name="description" placeholder="简介" maxlength="5000"></textarea><br/>
+        备注&nbsp&nbsp&nbsp&nbsp&nbsp : <textarea name="note" placeholder="备注" maxlength="5000"></textarea><br/>
+        来源&nbsp&nbsp&nbsp&nbsp&nbsp : <textarea name="source" placeholder="来源" maxlength="200"></textarea><br/>
+        <input type="submit" value="创建">
     </form>
 
 </div>

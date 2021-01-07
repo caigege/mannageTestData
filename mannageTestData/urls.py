@@ -53,7 +53,8 @@ urlpatterns = [
     path('company/getPost/', companyView.getPost),
     path('company/updatePost/', companyView.updatePost),
     path('company/getProject/', companyView.getProject),
-    path('business/', businessView.toBusiness),
+    path('tobusiness/<businessName>', businessView.toBusiness),
+    path('business/create/', businessView.create),
 
 
     # path('sys/login/', loginView.fristPage, name='login'),
