@@ -200,11 +200,11 @@ def getDep(request):
     # print("departmentObj getDep",departmentObj)
     # result.id
     # ret = serializers.serialize("python", result)
-    resultOK = json.dumps(resultList)
+    resultOK = json.dumps(resultList,ensure_ascii=False)
     # # print("getDep resutl： ", type(result))
     # print("getDep resultOK： ", result)
 
-    return HttpResponse(resultOK)
+    return HttpResponse(resultOK,)
 
 
 def departmentsGetResultAll(request):

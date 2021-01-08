@@ -23,13 +23,15 @@ name	为你的 URL 取名能使你在 Django 的任意地方唯一地引用它�
 
 """
 from django.contrib import admin
-from django.urls import path
-from  model import views
-from L1_Task_create import views as L1_Task_createView
-from login import views as loginView
-from company import views as companyView
-from business import views as businessView
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from django.urls import path
+
+from L1_Task_create import views as L1_Task_createView
+from business import views as businessView
+from company import views as companyView
+from login import views as loginView
+from model import views
+
 # from  login import views
 
 urlpatterns = [
@@ -55,7 +57,7 @@ urlpatterns = [
     path('company/getProject/', companyView.getProject),
     path('tobusiness/<businessName>', businessView.toBusiness),
     path('business/create/', businessView.create),
-
+    path('business/empGet/', businessView.getEmp),
 
     # path('sys/login/', loginView.fristPage, name='login'),
 ]

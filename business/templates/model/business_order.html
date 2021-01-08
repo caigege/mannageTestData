@@ -43,34 +43,45 @@
 <div id="createTaskDiv" style="display:none;">
     分解任务
 
-    <form method="post">
+    <form method="post" action="/business/create/">
         <strong>项目名:</strong><input disabled value="1"><br/>
-        <strong>任务名:</strong><input><br/>
-        <strong>内容:</strong><input><br/>
-        <strong>工作耗时:</strong><input type="number"><br/>
+        <strong><span style="color:red;">*</span>任务名:</strong><input><br/>
+        <strong><span style="color:red;">*</span>内容:</strong><input><br/>
+        <strong><span style="color:red;">*</span>工作耗时:</strong><input type="number"> 小时<br/>
 
-        <strong>任务策略:</strong>
+        <strong><span style="color:red;">*</span>任务策略:</strong>
         <select name="strategy">
-            {#            {% for i in  %}#}
-            {#                <option onclick="f()" style="background-color: white;color:black; " value="1">普通</option>#}
-            {#                <option onmouseover="f()" style="background-color: orange;color:black; " value="2">执行者自行创建</option>#}
-            {#                <option onmouseleave="f()f()" style="background-color: blue;color:white; " value="3">1级管理安排</option>#}
-            {#                <option onmouseover="f()" style="background-color: darkviolet;color:white; " value="4">管理级安排</option>#}
-            {#                <option onmouseover="f()" style="background-color: red;color:black; " value="5">紧急</option>#}
-            <option style="background-color: white;color:black; " value="1">普通</option>
-            <option style="background-color: orange;color:black; " value="2">执行者自行创建</option>
-            <option style="background-color: blue;color:white; " value="3">1级管理安排</option>
-            <option style="background-color: darkviolet;color:white; " value="4">管理级安排</option>
-            <option style="background-color: red;color:black; " value="5">紧急</option>
-            {#            {% endfor %}#}
+            <option class="strategyOption" value="0" selected="true" disabled>-- 请选择 --</option>
+            <option class="strategyOption" style="background-color: white;color:black; " value="1">普通</option>
+            <option class="strategyOption" style="background-color: orange;color:black; " value="2">执行者自行创建</option>
+            <option class="strategyOption" style="background-color: blue;color:white; " value="3">1级管理安排</option>
+            <option class="strategyOption" style="background-color: darkviolet;color:white; " value="4">管理级安排</option>
+            <option class="strategyOption" style="background-color: red;color:black; " value="5">紧急</option>
         </select>
         <br/>
-        <strong>任务级别:</strong><input><br/>
 
-        <strong>选择部门:</strong><input><br/>
 
-        <strong>任务指派:</strong><input><br/>
+        <strong><span style="color:red;">*</span>任务级别:</strong>
+        <select name="taskLevel">
+            <option class="taskLevelOption" value="0" selected="true" disabled>-- 请选择 --</option>
+            <option class="taskLevelOption" value="1">再次分解</option>
+            <option class="taskLevelOption" value="2">可执行</option>
+        </select>2级任务可执行,1级任务再次分解
+        <br/>
 
+        <strong><span style="color:red;">*</span>选择部门:</strong>
+        <select name="selectDep">
+        </select>
+        <br/>
+
+        <strong><span style="color:red;">*</span>选择岗位:</strong>
+        <select name="selectPost">
+        </select>
+        <br/>
+
+        <strong><span style="color:red;">*</span>任务指派:</strong><input><br/>
+
+        <input type="submit" value="提交">
 
     </form>
 

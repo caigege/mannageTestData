@@ -141,12 +141,36 @@ def getVuale(table, field, fieldObject):
     # print("getVuale-fieldObject: " , fieldObject)
     checkObject = table + ".objects.get(" + field + "=\'" + str(fieldObject) + "\')"
 
-    # print(checkObject)
+    print("checkObject :" + checkObject)
     try:
         result = eval(checkObject)
     except:
         checkObject = table + ".objects.get(" + field + "=" + str(fieldObject) + ")"
+        print("checkObject except :"+checkObject)
         result = eval(checkObject)
+    # print("result:" + str(result))
+
+    return result
+
+
+def getVualeStr(table, field, fieldObject:str):
+    '''
+    获取单个对象
+    :param table: String：  models. class 类名
+    :param field: String 字段名
+    :param fieldObject: 对象
+    :return:
+    '''
+    # print("getVuale-fieldObject: " , fieldObject)
+    checkObject = table + ".objects.get(" + field + "=\'" + str(fieldObject) + "\')"
+
+    print("checkObject :" + checkObject)
+    try:
+        result = eval(checkObject)
+    except:
+        # checkObject = table + ".objects.get(" + field + "=" + str(fieldObject) + ")"
+        # print("checkObject except :"+checkObject)
+        result = {"msg":"未查询到"}
     # print("result:" + str(result))
 
     return result
@@ -183,7 +207,13 @@ def getAllVuale(table, field, fieldObject):
     checkObject = table + ".objects.filter(" + field + "=" + fieldObject + ")"
 
     # print(checkObject)
-    result = eval(checkObject)
+    try:
+        result = eval(checkObject)
+    except:
+        # checkObject = table + ".objects.get(" + field + "=" + str(fieldObject) + ")"
+        # print("checkObject except :"+checkObject)
+        result = {"msg": "查询异常"}
+    # result = eval(checkObject)
     # print("result:" + str(result))
 
     return result
