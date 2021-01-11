@@ -14,9 +14,6 @@ $(document).ready(function () {
         var businessName=$(this).parent().parent().children().eq(1).text()
         // alert(businessName)
         window.location="/tobusiness/"+businessName
-
-        // todo 20210106
-        // $.get("/business/",{"businessName":businessName})
     })
 
 

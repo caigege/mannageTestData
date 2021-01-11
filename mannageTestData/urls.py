@@ -32,6 +32,7 @@ from company import views as companyView
 from login import views as loginView
 from model import views
 
+
 # from  login import views
 
 urlpatterns = [
@@ -40,7 +41,7 @@ urlpatterns = [
     path('', views.detail, name='detail'),
     # path('detailChild/', views.detailChild, name='detailChild'),
     path('detailChild/', views.detailChild, name='detailChild'),
-    path('task/', L1_Task_createView.create_Task, name='task'),
+    path('task/create/', L1_Task_createView.create_Task, name='task'),
     path('sys/login/', loginView.login, name='login'),
     path('sys/welcome/', loginView.fristPage, name='welcome'),
     # path('login/', loginView.welcome, name='hadLogin'),
@@ -58,6 +59,7 @@ urlpatterns = [
     path('tobusiness/<businessName>', businessView.toBusiness),
     path('business/create/', businessView.create),
     path('business/empGet/', businessView.getEmp),
+    path('business/createTask/', businessView.getEmp),
 
     # path('sys/login/', loginView.fristPage, name='login'),
 ]

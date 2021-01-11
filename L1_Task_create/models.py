@@ -35,14 +35,31 @@ id是唯一的 主键
 任务状态     1:待分解（级别为1、2级 默认状态） 2:确认 3:执行中(时间计划内开始） 
             4 执行完成（未超期） 5 延迟（执行中超时未完成）6超时（按工作时间计算）7 时间计划提前执行
 任务级别  1:方向级 2:分解任务级 3：任务可执行级
-
-
+任务策略 1 2 3 4 5
 
 date=time(),who="小米",taskName="任务名",taskContent="任务内容",starTime 
 '''
 # TODO 任务数据设计文档——任务
 class Task(models.Model):
-    name = models.CharField(max_length=200)
-    author = models.CharField(max_length=100)
-    pub_house = models.CharField(max_length=200)
-    pub_date = models.DateTimeField('date published')
+    # projectKey = models.ForeignKey(max_length=200) 外键
+    # 项目id
+    projectId = models.ForeignKey("company.Company", on_delete=models.DO_NOTHING, verbose_name="项目id")
+    taskName = models.CharField('任务名',max_length=100)
+    content = models.CharField('任务内容',max_length=1000)
+
+    # createTime = models.DateTimeField('任务创建时间',)
+    createTime = models.DateTimeField("任务创建时间", auto_now_add=True)
+    startTime = models.DateField("任务开始时间", blank=True, null=True)
+    taskTime = models.IntegerField('工作时间长', default=0)
+
+
+
+    strategy = models.IntegerField('任务策略',default=1)
+    taskLevel = models.IntegerField('任务级别',default=1)
+    selectDep = models.CharField('部门',max_length=100)
+    selectPost = models.CharField('岗位',max_length=100)
+    selectEmp = models.DateTimeField('任务指派')
+    upTaskId = models.IntegerField('上级任务',default=0)
+    # me =
+    # taskTime = models.DateTimeField('工作时间长')
+    models.AutoField

@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from business.models import project
 from company import views as companyViews
-from company.views import companyGet
+from company.views import companyGet, createData
 from login import views
 
 
@@ -49,16 +49,7 @@ def toBusiness(request, businessName):
 @csrf_exempt
 def create(request):
     '''
-    strategy
 
-    4.任务策略：
-     a.加急（必须完成）
-     b.顺延(先处理其他，增加优先等级，默认为1，优先等级每高一级，优先顺序增加）优先推荐
-    1级：无色，普通，创建时间排列
-    2级：白色，执行者自行创建
-    3级：蓝色，1级上级安排顺
-    4级：紫色，管理级
-    5级：红色，紧急任务，一般不用
     :param request:
     :return:
     '''
@@ -83,8 +74,8 @@ def create(request):
     objs = {"company": company, "project": project}
 
     print("create:", locals())
-    # projectJ = createData(data, "project", objs)
-    projectJ = True
+    projectJ = createData(data, "project", objs)
+    # projectJ = True
     if not projectJ:
         mgs = {"message": str(projectJ) + "添加失败"}
     else:
