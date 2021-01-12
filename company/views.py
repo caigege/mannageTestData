@@ -360,16 +360,15 @@ def addEmp(request, id):
     employee = {}
     employee['gender'] = users.gender
     if (users.name == "" or users.name is None):
-
         employee['name'] = str(users.phone)
     else:
-
         employee['name'] = users.name
+
     if (users.education == "" or users.education is None):
         employee['education'] = "\'大专\'"
     else:
-
         employee['education'] = users.education
+
     employee['phone'] = users.phone
     employee['companyId'] = 'company'
     employee['department'] = departmentObject.id
@@ -408,20 +407,19 @@ def createData(data: dict, table, objs: dict = None):
     dataStr = dataStr[0:len(dataStr) - 1]
 
     dataStr = table + ".objects.create(" + dataStr + ")"
-    # print("dataStr: " + dataStr)
+    print("dataStr: " + dataStr)
     try:
         if (objs is not None):
             try:
-                exec(dataStr, objs)
+                return eval(dataStr, objs)
             except IntegrityError:
-                return "已存在"
+                return {"mgs":"已存在"}
 
         else:
-            exec(dataStr)
-        return True
+            return eval(dataStr)
+
     except ObjectDoesNotExist:
-        print()
-        return False
+        return {"mgs":"异常"}
     # print(dataStr)
 
 

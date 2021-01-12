@@ -68,22 +68,25 @@ def create(request):
     if description is not None:
         data['note'] = "\'" + note + "\'"
 
-    data['strategy'] = "\'" + request.POST.get("strategy") + "\'"
+    # data['strategy'] = "\'" + request.POST.get("strategy") + "\'"
 
     data['companyId'] = 'company'
     objs = {"company": company, "project": project}
-
-    print("create:", locals())
+    if(name.replace( ' ' , '' )==""):
+        mgs = {"erro": "项目名不能为空"}
+        return JsonResponse(mgs, charset='utf-8', safe=False, json_dumps_params={"ensure_ascii": False})
+    #
+    if(description.replace( ' ' , '' )==""):
+        mgs = {"erro": "项目名简介 不能为空"}
+        return JsonResponse(mgs, charset='utf-8', safe=False, json_dumps_params={"ensure_ascii": False})
+    #
     projectJ = createData(data, "project", objs)
-    # projectJ = True
-    if not projectJ:
-        mgs = {"message": str(projectJ) + "添加失败"}
+    if (type(projectJ) is project):
+        mgs = {"success": "项目" + "添加成功"}
     else:
-        if projectJ == "已存在":
-            mgs = {"message": str(projectJ)}
-        else:
-            # User.objects.filter(id=projectJ).update(postStatus=2)
-            mgs = {"message": str(projectJ) + "添加成功"}
+        mgs = {"erro": projectJ['mgs']}
+    print("create:", mgs)
+
     return JsonResponse(mgs, charset='utf-8', safe=False, json_dumps_params={"ensure_ascii": False})
     # return  HttpResponse({'alert(1)'})
     # return  HttpResponse({"script":"alert","mgs":"成功"})

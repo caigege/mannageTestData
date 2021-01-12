@@ -3,26 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <title>任务管理系统</title>
+    <script src="/static/js/jquery-3.5.1.min.js"></script>
+    <script src="/static/js/jquery.form.js"></script>
     <script>
         function toCompany() {
             self.location = "/company/";
         }
-           function toSelf() {
+        function toSelf() {
             self.location.href = "";
         }
-        
-        
     </script>
 </head>
+
+
 <body>
 <h1>{{ msg }}</h1>
 登录成功 欢迎 来到任务系统
-
+{#<button id="exit">退出</button>#}
+{#<script>#}
+{#$("#exit").click(function () {#}
+{#    $.post("/exit/",function (data) {#}
+{##}
+{#    })#}
+{#})#}
+{#</script>#}
 {% if msg == "企业版" %}
 
-    <button   onclick="toCompany()">进入企业版</button>
+    <button onclick="toCompany()">进入企业版</button>
 {% else %}
-    <button  onclick="toSelf()">进入个人版</button>
+    <button onclick="toSelf()">进入个人版</button>
 {% endif %}
 </body>
 </html>

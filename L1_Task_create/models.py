@@ -43,13 +43,13 @@ date=time(),who="小米",taskName="任务名",taskContent="任务内容",starTim
 class Task(models.Model):
     # projectKey = models.ForeignKey(max_length=200) 外键
     # 项目id
-    projectId = models.ForeignKey("company.Company", on_delete=models.DO_NOTHING, verbose_name="项目id")
-    taskName = models.CharField('任务名',max_length=100)
+    projectId = models.ForeignKey("business.project", on_delete=models.DO_NOTHING, verbose_name="项目id")
+    taskName = models.CharField('任务名',max_length=100,unique=True)
     content = models.CharField('任务内容',max_length=1000)
 
     # createTime = models.DateTimeField('任务创建时间',)
     createTime = models.DateTimeField("任务创建时间", auto_now_add=True)
-    startTime = models.DateField("任务开始时间", blank=True, null=True)
+    startTime = models.DateTimeField("任务开始时间", blank=True, null=True)
     taskTime = models.IntegerField('工作时间长', default=0)
 
 
@@ -58,7 +58,7 @@ class Task(models.Model):
     taskLevel = models.IntegerField('任务级别',default=1)
     selectDep = models.CharField('部门',max_length=100)
     selectPost = models.CharField('岗位',max_length=100)
-    selectEmp = models.DateTimeField('任务指派')
+    selectEmp = models.CharField('任务指派',max_length=100)
     upTaskId = models.IntegerField('上级任务',default=0)
     # me =
     # taskTime = models.DateTimeField('工作时间长')

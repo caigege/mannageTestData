@@ -3,14 +3,31 @@ import secrets
 import time
 
 from django.core.exceptions import ObjectDoesNotExist
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
-
+from django.views.decorators.csrf import csrf_exempt
 from company.models import Company,department,post
 
 from login.models import User
 from employee.models import emp
 from business.models import project
+@csrf_exempt
+def exit(request):
+    del request.session["user"]
 
+    # klist=session.keys()
+    # dataStr=""
+    # for k in klist:
+    #     dataStr+=k+"="+str(session.get(k))+","
+    # print("dataStr exit:"+dataStr)
+
+    # accout = request.session.get("user")
+    # accout = request.session.get("user")
+    # accout = request.session.get("user")
+    print()
+    msg = {"message": "success: 添加成功"}
+
+    return JsonResponse(msg)
 
 def  fristPage(request):
     '''

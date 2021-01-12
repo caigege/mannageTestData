@@ -1,9 +1,19 @@
 $(document).ready(function () {
+    $(function () {
+        $("#createProjectForm").ajaxForm(function (dataJson) {
+            console.log(dataJson, typeof dataJson)
+            if (dataJson["success"] != undefined) {
+                window.location.reload()
+            } else {
+                alert(dataJson.erro)
+            }
+        })
+    })
 
     $(function () {
-        /** 验证文件是否导入成功  */
+
         $("#createTaskDiv").ajaxForm(function (data) {
-            // console.log(data,typeof data)
+            console.log(data, typeof data)
             var dataJson = JSON.parse(data)
             // if()
             if (dataJson["success"] != undefined) {
@@ -14,8 +24,10 @@ $(document).ready(function () {
 
             }
 
-            // alert(dataJson.getKey())
+            alert(dataJson.getKey())
         });
+
+
     });
 
     /**
@@ -38,13 +50,22 @@ $(document).ready(function () {
     $("input[name='createTaskSubmit']").mouseenter(function () {
         // alert(2)
         // console.log($("input[name='nowOrNot']").prop("checked"))
-        //  if ($("input[name='nowOrNot']").prop("checked")) {
-        //     //    勾选
-        //     // alert("勾选")
-        // } else {
-        //     // 未勾选
-        //     //  alert("未勾选")
-        // }
+        var nowDate = new Date
+        // var nowDated = new Date(nowDate)
+        var startDate = new Date($("#start").val())
+        if ($("input[name='nowOrNot']").prop("checked")) {
+            //    勾选
+            // alert("勾选")
+
+            // if(nowDate-startDate)
+        } else {
+            // 未勾选
+            //  alert("未勾选")
+            if (nowDate - startDate > 3 * 60 * 1000) {
+                alert("马上开始：开始时间超过设置，重新设置时间")
+                return
+            }
+        }
 
 
         // var projectName = $("#createTaskDiv").find("input").first().attr("value")
@@ -211,17 +232,28 @@ $(document).ready(function () {
         showOption($("#createTaskDiv"))
         // function(){
 
-        var time = new Date()
-        var second = "00"
-        // var second = time.getSeconds()
-        var min = time.getMinutes()
-        var hour = time.getHours()
-        var ti = hour + ":" + min + ":" + second
-        console.log("ti:" + ti)
-        var day = ('0' + time.getDate()).slice(-2)
-        var month = ('0' + (time.getMonth() + 1)).slice(-2)
-        var today = time.getFullYear() + '-' + month + '-' + day + "T" + ti
-        $('#start').val(today)
+
+        setTimeout(function () {
+            var time = new Date()
+            var second = "00"
+            // var second = time.getSeconds()
+            var min = time.getMinutes()
+            if (min < 10) {
+                min = "0" + min
+            }
+            var hour = time.getHours()
+            if (hour < 10) {
+                hour = "0" + hour
+            }
+            var ti = hour + ":" + min + ":" + second
+            console.log("ti:" + ti)
+            var day = ('0' + time.getDate()).slice(-2)
+            var month = ('0' + (time.getMonth() + 1)).slice(-2)
+            var today = time.getFullYear() + '-' + month + '-' + day + "T" + ti
+            // $('#start').attr("value",today)
+            console.log("today: " + today)
+            $('#start').val(today)
+        }, 100)
         // }
         // alert( $("span[name='projectName']").text())
 

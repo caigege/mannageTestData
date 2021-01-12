@@ -6,11 +6,17 @@
     <script src="/static/js/jquery-3.5.1.min.js"></script>
     <script src="/static/js/jquery.form.js"></script>
     <script src="/static/js/businessJs.js"></script>
-    <script type="text/javascript">{{ script }}('{{ mgs }}')</script>
+    <script type="text/javascript">{{ script }}('{{ mgs }}')
+
+    function toCompany() {
+            self.location = "/company/";
+        }
+    </script>
 
 </head>
 <body>
 <button id="createBuniness">创建新项目</button>
+<button id="mainPage" onclick="toCompany()" >公司首页</button>
 <div style="background-color: rgba(91,208,237,0.61)" id="detail">
     <strong>项目名:</strong>
     <p><span style="font-size: 20px " name="projectName"><b>{{ project.name }}</b></span></p><br/>
@@ -89,6 +95,7 @@
         {#        <input id="start" name="start" type="date" data-format="YYYY-MM-DD HH:mm">#}
         <input id="start" name="startTime" type="datetime-local">
         <br/>
+
         <input type="checkbox" name="nowOrNot" >马上开始(不选择将于"开始时间"后10分钟开始,10分钟内确认任务,结束时间为开始时间+工作耗时)
         勾选后,"开始时间"作为开始，不再考虑确认时间
         <br/><br/><br/><br/>
@@ -99,7 +106,7 @@
 </div>
 
 <div style="display:none;" id="createTable">
-    <form action="/business/create/" method="post">
+    <form id="createProjectForm" action="/business/create/" method="post">
         项目名&nbsp&nbsp&nbsp : <input type="text" name="name" placeholder="项目名" maxlength="80"><br/>
         项目简介: <textarea name="description" placeholder="简介" maxlength="5000"></textarea><br/>
         备注&nbsp&nbsp&nbsp&nbsp&nbsp : <textarea name="note" placeholder="备注" maxlength="5000"></textarea><br/>

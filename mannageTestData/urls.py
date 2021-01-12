@@ -60,6 +60,7 @@ urlpatterns = [
     path('business/create/', businessView.create),
     path('business/empGet/', businessView.getEmp),
     path('business/createTask/', businessView.getEmp),
+    path('exit/', loginView.exit),
 
     # path('sys/login/', loginView.fristPage, name='login'),
 ]
