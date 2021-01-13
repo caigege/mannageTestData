@@ -32,8 +32,18 @@ id是唯一的 主键
 
 4.*状态*
 
-任务状态     1:待分解（级别为1、2级 默认状态） 2:确认 3:执行中(时间计划内开始） 
-            4 执行完成（未超期） 5 延迟（执行中超时未完成）6超时（按工作时间计算）7 时间计划提前执行
+任务状态    ---- 1:待分解（级别为1、2级 默认状态）----
+            0:任务确认(01超时未确认，02强制回收（未确认状态）,意外回收（
+            1:执行中(确认后按开始时间判断）
+            2:执行完成 待验收
+            3:提前完成 
+            4 顺利完成（未超期）
+            5 验收后,超时完成（按工作时间计算）
+            6 超时未提交验收 自动提交
+            
+            6 延迟（执行中超时未完成）
+            # 7 时间计划提前执行 （不考虑）
+            
 任务级别  1:方向级 2:分解任务级 3：任务可执行级
 任务策略 1 2 3 4 5
 
@@ -51,7 +61,7 @@ class Task(models.Model):
     createTime = models.DateTimeField("任务创建时间", auto_now_add=True)
     startTime = models.DateTimeField("任务开始时间", blank=True, null=True)
     taskTime = models.IntegerField('工作时间长', default=0)
-
+    state=models.IntegerField('任务状态', default=0)
 
 
     strategy = models.IntegerField('任务策略',default=1)

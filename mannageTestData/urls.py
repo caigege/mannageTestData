@@ -30,6 +30,7 @@ from L1_Task_create import views as L1_Task_createView
 from business import views as businessView
 from company import views as companyView
 from login import views as loginView
+from User import views as UserView
 from model import views
 
 
@@ -61,6 +62,7 @@ urlpatterns = [
     path('business/empGet/', businessView.getEmp),
     path('business/createTask/', businessView.getEmp),
     path('exit/', loginView.exit),
+    path('user/', UserView.getUser),
 
     # path('sys/login/', loginView.fristPage, name='login'),
 ]

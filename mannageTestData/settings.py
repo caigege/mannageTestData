@@ -48,7 +48,8 @@ INSTALLED_APPS = [
     'L1_Task_create',
     'company',
     'employee',
-    'business'
+    'business',
+    'User'
 
 
 ]

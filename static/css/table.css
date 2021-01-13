@@ -74,6 +74,26 @@ td, th {
     right: 300px;
 }
 
+button.taskSure {
+    background-color: #cec05869;
+    box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+
+    animation: myfirst 2s infinite;
+    -moz-animation: myfirst 2s infinite; /* Firefox */
+    -webkit-animation: myfirst 2s infinite; /* Safari and Chrome */
+    -o-animation: myfirst 2s infinite; /* Opera */
+}
+
+@keyframes myfirst {
+    0% {
+        box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 1.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    }
+    50% {
+        box-shadow: 0 12px 16px 0 rgba(0, 0, 0, 0.24), 0 17px 50px 0 rgba(0, 0, 0, 0.19);
+    }
+}
+
+
 button.post {
     position: relative;
     left: 300px;

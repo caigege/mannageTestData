@@ -11,6 +11,7 @@ from company.models import Company,department,post
 from login.models import User
 from employee.models import emp
 from business.models import project
+from L1_Task_create.models import Task
 @csrf_exempt
 def exit(request):
     del request.session["user"]
@@ -63,7 +64,9 @@ def login(request):
                 print("passwordDB: " + passwordDB)
                 if (password == passwordDB):
                     # request.session["key"]=
-
+                    cookie = request.COOKIES.get("csrftoken")
+                    request.session['user'] = account
+                    request.session['csrftoken'] = cookie
                     return render(request, 'model/welcom.html', {'msg': '个人版'})
 
             return render(request, 'model/erro/loginErro.html', {'error_msg': '账号/或密码错误'})
@@ -223,12 +226,13 @@ def getAllVuale(table, field, fieldObject):
     '''
     checkObject = table + ".objects.filter(" + field + "=" + fieldObject + ")"
 
-    # print(checkObject)
+    print(checkObject)
     try:
         result = eval(checkObject)
-    except:
-        # checkObject = table + ".objects.get(" + field + "=" + str(fieldObject) + ")"
+    except EOFError:
+        # cheeckObject = table + ".objects.get(" + field + "=" + str(fieldObject) + ")"
         # print("checkObject except :"+checkObject)
+        print(EOFError)
         result = {"msg": "查询异常"}
     # result = eval(checkObject)
     # print("result:" + str(result))

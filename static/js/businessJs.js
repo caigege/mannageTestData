@@ -68,80 +68,80 @@ $(document).ready(function () {
         }
 
 
-        // var projectName = $("#createTaskDiv").find("input").first().attr("value")
-        // Tasks["projectName"] = projectName
-        //
-        // var taskName = $("#createTaskDiv").find("input:eq(1)").val()
-        // // console.log(taskName, typeof taskName)
-        // if ($.trim(taskName).length == 0) {
-        //     alert("任务名不能为空")
-        //     Tasks = {}
-        //     return
-        // }
-        // Tasks["taskName"] = taskName
-        //
-        //
-        // var content = $("#createTaskDiv").find("textarea").val()
-        // if ($.trim(content).length == 0) {
-        //     alert("内容不能为空")
-        //     Tasks = {}
-        //     return
-        // }
-        // Tasks["content"] = content
-        //
-        //
-        // var workTime = $("#createTaskDiv").find("input:eq(2)").val()
-        // if ($.trim(workTime) == 0) {
-        //     alert("时间不能为空")
-        //     Tasks = {}
-        //     return
-        // } else if (workTime < 0) {
-        //     alert("时间不能小于0")
-        //     Tasks = {}
-        //
-        //     return
-        // }
-        // Tasks["workTime"] = workTime
-        //
-        //
-        // var strategy = checkSelect($("select[name='strategy']"), "任务策略");
-        // if (!strategy) {
-        //     Tasks = {}
-        //     return
-        // }
-        // Tasks["strategy"] = strategy
-        //
-        //
-        // var taskLevel = checkSelect($("select[name='taskLevel']"), "任务级别");
-        // if (!taskLevel) {
-        //     Tasks = {}
-        //     return
-        // }
-        // Tasks["taskLevel"] = taskLevel
-        //
-        //
-        // var selectDep = checkSelect($("select[name='selectDep']"), "部门");
-        // if (!selectDep) {
-        //     Tasks = {}
-        //     return
-        // }
-        // Tasks["selectDep"] = selectDep
-        //
-        //
-        // var selectPost = checkSelect($("select[name='selectPost']"), "岗位");
-        // if (!selectPost) {
-        //     Tasks = {}
-        //     return
-        // }
-        // Tasks["selectPost"] = selectPost
-        //
-        //
-        // var selectEmp = checkSelect($("select[name='selectEmp']"), "任务指派");
-        // if (!selectEmp) {
-        //     Tasks = {}
-        //     return
-        // }
-        // Tasks["selectEmp"] = selectEmp
+        var projectName = $("#createTaskDiv").find("input").first().attr("value")
+        Tasks["projectName"] = projectName
+
+        var taskName = $("#createTaskDiv").find("input:eq(1)").val()
+        // console.log(taskName, typeof taskName)
+        if ($.trim(taskName).length == 0) {
+            alert("任务名不能为空")
+            Tasks = {}
+            return
+        }
+        Tasks["taskName"] = taskName
+
+
+        var content = $("#createTaskDiv").find("textarea").val()
+        if ($.trim(content).length == 0) {
+            alert("内容不能为空")
+            Tasks = {}
+            return
+        }
+        Tasks["content"] = content
+
+
+        var workTime = $("#createTaskDiv").find("input:eq(2)").val()
+        if ($.trim(workTime) == 0) {
+            alert("时间不能为空")
+            Tasks = {}
+            return
+        } else if (workTime < 0) {
+            alert("时间不能小于0")
+            Tasks = {}
+
+            return
+        }
+        Tasks["workTime"] = workTime
+
+
+        var strategy = checkSelect($("select[name='strategy']"), "任务策略");
+        if (!strategy) {
+            Tasks = {}
+            return
+        }
+        Tasks["strategy"] = strategy
+
+
+        var taskLevel = checkSelect($("select[name='taskLevel']"), "任务级别");
+        if (!taskLevel) {
+            Tasks = {}
+            return
+        }
+        Tasks["taskLevel"] = taskLevel
+
+
+        var selectDep = checkSelect($("select[name='selectDep']"), "部门");
+        if (!selectDep) {
+            Tasks = {}
+            return
+        }
+        Tasks["selectDep"] = selectDep
+
+
+        var selectPost = checkSelect($("select[name='selectPost']"), "岗位");
+        if (!selectPost) {
+            Tasks = {}
+            return
+        }
+        Tasks["selectPost"] = selectPost
+
+
+        var selectEmp = checkSelect($("select[name='selectEmp']"), "任务指派");
+        if (!selectEmp) {
+            Tasks = {}
+            return
+        }
+        Tasks["selectEmp"] = selectEmp
 
 
     })

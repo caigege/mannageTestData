@@ -1,10 +1,106 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <meta charset="UTF-8" http-equiv="Cache" content="no-cache">
+    <title>任务系统 用户中心</title>
+    <script src="/static/js/jquery-3.5.1.min.js"></script>
+    <script src="/static/js/companyJs.js"></script>
+    <script src="/static/js/user.js"></script>
+    <link rel="stylesheet" type="text/css" href="/static/css/table.css"/>
 </head>
 <body>
+<button id="editUserInfo">编辑个人信息</button>
+<button id="taskInfo">任务信息</button>
+<button id="message">消息</button>
+<div id="editUserInfoDiv" style="display: none">
+    editUserInfoDiv
+</div>
+<div id="taskInfoDiv" style="display: block">
+    <table id="taskInfoTable" class="pure-table pure-table-bordered">
+        <thead>
+        <tr>
+            <td>序号</td>
+            <td>任务名</td>
+            <td>任务内容</td>
+            <td>任务开始时间</td>
+            <td>工作时间长</td>
+            <td>任务级别</td>
+            <td>岗位</td>
+            <td>任务指派</td>
+            <td>任务级别</td>
+            <td>操作</td>
+        </tr>
+        </thead>
+        <tbody>
+        {% for li in list %}
+            <tr data="{{ li.pk }}">
+                <td>{{ forloop.counter }}</td>
 
+                <td>{{ li.fields.taskName }}</td>
+                <td>{{ li.fields.content }}</td>
+                {#                <td>{{ li.fields.startTime| date:"YYYY-MM-DD HH:mm:ss" }}</td>#}
+                <td>{{ li.fields.startTime| date:"Y-m-d H:i:s" }}</td>
+                {#                <td>{{ li.fields.startTime| timesince }}</td>#}
+                <td>{{ li.fields.taskTime }}小时</td>
+                {% if li.fields.strategy == 1 %}
+
+
+                    <td style="background-color: white;color:black; ">普通按开始时间排序</td>
+
+                {% elif li.fields.strategy == 2 %}
+
+                    <td style="background-color: orange;color:black; ">执行者自行调整执行顺序</td>
+
+                {% elif li.fields.strategy == 3 %}
+
+                    <td style="background-color: blue;color:white; ">1级管理者安排</td>
+                    {#                    1级管理者安排,任务调整 只能是下一级且是本部门的#}
+
+                {% elif li.fields.strategy == 4 %}
+
+                    <td style="background-color: darkviolet;color:white; ">管理级安排</td>
+                    {#          管理级安排只能是下级 #}
+                {% elif li.fields.strategy == 5 %}
+
+                    <td style="background-color: red;color:black; ">紧急</td>
+
+                {% endif %}
+                {#                    <td style="color:rosybrown">{{ li.fields.strategy }}</td>#}
+
+
+                <td>{{ li.fields.taskLevel }}</td>
+                <td>{{ li.fields.selectPost }}</td>
+                <td>{{ li.fields.selectEmp }}</td>
+                <td>
+                    {% if li.fields.state == 0 %}
+                        <button class="taskSure">任务确认</button>
+                    {% elif li.fields.state == 1 %}
+                        执行中
+
+                        <button>执行完成</button>
+                        {% if li.fields.strategy == 1 or li.fields.strategy == 2%}
+                        <button>调整执行顺序</button>
+                        {% endif %}
+                    {% elif li.fields.state == 2 %}
+                        <span style="color:yellow;background-color: rgba(79,102,206,0.87)">执行完成 ,验收中</span>
+                    {% elif li.fields.state == 3 %}
+                        <span style="background-color:chartreuse">验收后,提前完成</span>
+                    {% elif li.fields.state == 4 %}
+                         <span style="background-color:chartreuse">验收后,顺利完成(计划时间 前10分钟 后20分钟内）</span>
+                    {% elif li.fields.state == 5 %}
+                        <span style="background-color:chartreuse"> 验收后,超时完成(计划时间20分钟后）</span>
+
+                    {% endif %}
+
+                </td>
+            </tr>
+        {% endfor %}
+
+        </tbody>
+    </table>
+</div>
+<div id="messageDiv" style="display: none">
+    messageDiv
+</div>
 </body>
 </html>
