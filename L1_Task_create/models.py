@@ -1,4 +1,5 @@
 from django.db import models
+
 # 【任务发布】需求：
 # 1、任务适用于项目开发
 # 2、任务必须分三级，3级是可执行的，1、2级只能分解任务
@@ -49,27 +50,27 @@ id是唯一的 主键
 
 date=time(),who="小米",taskName="任务名",taskContent="任务内容",starTime 
 '''
+
+
 # TODO 任务数据设计文档——任务
 class Task(models.Model):
     # projectKey = models.ForeignKey(max_length=200) 外键
     # 项目id
     projectId = models.ForeignKey("business.project", on_delete=models.DO_NOTHING, verbose_name="项目id")
-    taskName = models.CharField('任务名',max_length=100,unique=True)
-    content = models.CharField('任务内容',max_length=1000)
+    taskName = models.CharField('任务名', max_length=100, unique=True)
+    content = models.CharField('任务内容', max_length=1000)
 
     # createTime = models.DateTimeField('任务创建时间',)
     createTime = models.DateTimeField("任务创建时间", auto_now_add=True)
     startTime = models.DateTimeField("任务开始时间", blank=True, null=True)
     taskTime = models.IntegerField('工作时间长', default=0)
-    state=models.IntegerField('任务状态', default=0)
+    state = models.IntegerField('任务状态', default=0)
 
-
-    strategy = models.IntegerField('任务策略',default=1)
-    taskLevel = models.IntegerField('任务级别',default=1)
-    selectDep = models.CharField('部门',max_length=100)
-    selectPost = models.CharField('岗位',max_length=100)
-    selectEmp = models.CharField('任务指派',max_length=100)
-    upTaskId = models.IntegerField('上级任务',default=0)
-    # me =
-    # taskTime = models.DateTimeField('工作时间长')
+    strategy = models.IntegerField('任务策略', default=1)
+    taskLevel = models.IntegerField('任务级别', default=1)
+    selectDep = models.CharField('部门', max_length=100)
+    selectPost = models.CharField('岗位', max_length=100)
+    selectEmp = models.CharField('任务指派', max_length=100)
+    upTaskId = models.IntegerField('上级任务', default=0)
+    taskCreater = models.CharField('任务创建者', max_length=50, null=True)
     models.AutoField

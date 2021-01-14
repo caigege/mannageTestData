@@ -257,8 +257,10 @@ def register(request):
 
         if (typeL == "个人"):
             phoneJp = check("User", "phone", account)
-
             if (phoneJp == False):
+                companyNameJp = check("Company", "account", account)
+                if (companyNameJp):
+                    return render(request, 'model/erro/loginErro.html', {'error_msg': '与公司名重复请重新注册'})
                 User.objects.create(phone=account, password=password,creatTime=time.strftime('%Y-%m-%d %H:%M:%S'))
                 return render(request, 'model/welcom.html', {'msg': '个人版'})
 

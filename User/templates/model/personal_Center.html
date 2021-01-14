@@ -33,7 +33,7 @@
         </thead>
         <tbody>
         {% for li in list %}
-            <tr data="{{ li.pk }}">
+            <tr data="{{ li.pk }} * {{ li.fields.taskCreater }}">
                 <td>{{ forloop.counter }}</td>
 
                 <td>{{ li.fields.taskName }}</td>
@@ -78,15 +78,18 @@
                         执行中
 
                         <button>执行完成</button>
-                        {% if li.fields.strategy == 1 or li.fields.strategy == 2%}
-                        <button>调整执行顺序</button>
+                        {% if li.fields.strategy == 1 or li.fields.strategy == 2 %}
+                            <button>调整执行顺序</button>
+                        {% endif %}
+                        {% if li.fields.taskLevel == 1 %}
+                            <button class="taskGoResolvej" >继续分解任务</button>
                         {% endif %}
                     {% elif li.fields.state == 2 %}
                         <span style="color:yellow;background-color: rgba(79,102,206,0.87)">执行完成 ,验收中</span>
                     {% elif li.fields.state == 3 %}
                         <span style="background-color:chartreuse">验收后,提前完成</span>
                     {% elif li.fields.state == 4 %}
-                         <span style="background-color:chartreuse">验收后,顺利完成(计划时间 前10分钟 后20分钟内）</span>
+                        <span style="background-color:chartreuse">验收后,顺利完成(计划时间 前10分钟 后20分钟内）</span>
                     {% elif li.fields.state == 5 %}
                         <span style="background-color:chartreuse"> 验收后,超时完成(计划时间20分钟后）</span>
 

@@ -38,12 +38,13 @@ def create_Task(request):
     :param request:
     :return:
     '''
+    user = request.session.get("user")
     projectName = request.POST.get("projectName")
     taskName = request.POST.get("taskName")
     content = request.POST.get("content")
     taskTime = request.POST.get("taskTime")
-    strategy = request.POST.get("strategy")  # 策略
-    taskLevel = request.POST.get("taskLevel")  # 任务级别
+    strategy = request.POST.get("strategy")  # 策略 处理任务处理顺序
+    taskLevel = request.POST.get("taskLevel")  # 任务级别 是否需分解 1再次分解 2执行
     selectDep = request.POST.get("selectDep")  # 部门
     selectPost = request.POST.get("selectPost")  # 岗位
     selectEmp = request.POST.get("selectEmp")  # 员工phone
@@ -119,6 +120,7 @@ def create_Task(request):
     task['selectPost']="\'"+selectPost+"\'"
     # task['selectPost']="\'"+selectPost+"\'"
     task['selectEmp']=selectEmp
+    task['taskCreater']="\'"+user+"\'"
     objs = {"projectId": projectId, "Task": Task}
     # print(locals())
     # Task.objects.create(projectId=projectId,taskName=taskName,content=content,
