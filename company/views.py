@@ -121,21 +121,41 @@ def addPost(request):
     return JsonResponse(msg, charset='utf-8')
 
 
-def checkFormat(lists: list):
+def checkFormat(lists: list or dict):
     '''
     检查Decimal datetime
     :param lists:
     :return:
     '''
-    for liss in lists:
-        for lissK in liss.keys():
-            value = liss.get(lissK)
+    if(isinstance(lists,list) ):
+        for liss in lists:
+            print("liss*******:",type(liss),liss)
+            for lissK in liss.keys():
+                value = liss.get(lissK)
+                # print("checkFormat: ",type(value))
+                if isinstance(value, Decimal):
+                    liss[lissK] = str(value)
+
+                elif isinstance(value, datetime):
+                    liss[lissK] = value.strftime("%Y-%m-%d %H:%M:%S")
+                elif isinstance(value,list):
+                    liss[lissK]=checkFormat(value)
+                elif isinstance(value,dict):
+                    liss[lissK]=checkFormat(value)
+
+    elif(isinstance(lists,dict)):
+        for listsK in lists.keys():
+            value = lists.get(listsK)
             # print("checkFormat: ",type(value))
             if isinstance(value, Decimal):
-                liss[lissK] = str(value)
+                lists[listsK] = str(value)
 
             elif isinstance(value, datetime):
-                liss[lissK] = value.strftime("%Y-%m-%d %H:%M:%S")
+                lists[listsK] = value.strftime("%Y-%m-%d %H:%M:%S")
+            elif isinstance(value, list):
+                lists[listsK] = checkFormat(value)
+            elif isinstance(value, dict):
+                lists[listsK] = checkFormat(value)
 
     return lists
 
@@ -260,7 +280,6 @@ def getArray(checkResult, *fied: str):
 
 
 def traverse(list, *fied: str):
-    pass
     '''
     遍历数据库查询结果列表 暂时不用 
     :return: 

@@ -11,8 +11,23 @@ from company import views as companyView
 from L1_Task_create.models import Task
 from django.utils import timezone
 from django.core import serializers
+from User.views import getUser
+from django.shortcuts import render
 # Create your views here.
 '''选择日期创建任务'''
+
+def taskVerify(request):
+    user=request.session.get("user")
+    user="13312345678" # todo 测试处理
+    task=Task.objects.filter(taskCreater=user,state=2)
+    # task=Task.objects.filter(taskCreater="\'"+user+"\'",state=2)
+    result = serializers.serialize("python", task)
+    print(locals())
+    if(result==[]):
+        result=""
+    return render(request, 'model/taskVerify.html', {"list": result})
+
+
 
 
 # from django.shortcuts import render
@@ -21,6 +36,16 @@ def judgeTaskselect(request, obj):
         return True
     return False
 
+def taskFinshiSubmit(request):
+    # todo 提交记录未处理 重复提交未提示
+    # 更新任务状态未待验收状态
+    data=request.GET.get("data")
+    print(data)
+    pk=data.split("*")[0]
+    # taskCreate=data.split("*")[1]
+    Task.objects.filter(id=pk).update(state=2)
+
+    return HttpResponse("更新数据成功")
 
 @csrf_exempt
 def create_Task(request):
@@ -144,3 +169,6 @@ def create_Task(request):
 # def create_Task(request):
 #
 #     return HttpResponse("创建任务")
+
+
+

@@ -4,7 +4,7 @@
     <meta charset="UTF-8" http-equiv="Cache" content="no-cache">
     <title>任务系统 用户中心</title>
     <script src="/static/js/jquery-3.5.1.min.js"></script>
-    <script src="/static/js/companyJs.js"></script>
+    {#    <script src="/static/js/companyJs.js"></script>#}
     <script src="/static/js/user.js"></script>
     <link rel="stylesheet" type="text/css" href="/static/css/table.css"/>
 </head>
@@ -12,6 +12,7 @@
 <button id="editUserInfo">编辑个人信息</button>
 <button id="taskInfo">任务信息</button>
 <button id="message">消息</button>
+<button id="task_verify">验收</button>
 <div id="editUserInfoDiv" style="display: none">
     editUserInfoDiv
 </div>
@@ -24,23 +25,25 @@
             <td>任务内容</td>
             <td>任务开始时间</td>
             <td>工作时间长</td>
+            <td>任务权重</td>
             <td>任务级别</td>
             <td>岗位</td>
             <td>任务指派</td>
-            <td>任务级别</td>
+
             <td>操作</td>
         </tr>
         </thead>
         <tbody>
         {% for li in list %}
-            <tr data="{{ li.pk }} * {{ li.fields.taskCreater }}">
+
+            <tr data-data="{{ li.pk }} * {{ li.fields.taskCreater }}">
                 <td>{{ forloop.counter }}</td>
 
                 <td>{{ li.fields.taskName }}</td>
                 <td>{{ li.fields.content }}</td>
-                {#                <td>{{ li.fields.startTime| date:"YYYY-MM-DD HH:mm:ss" }}</td>#}
+                <td>{{ li.fields.startTime| date:"YYYY-MM-DD HH:mm:ss" }}</td>
                 <td>{{ li.fields.startTime| date:"Y-m-d H:i:s" }}</td>
-                {#                <td>{{ li.fields.startTime| timesince }}</td>#}
+                <td>{{ li.fields.startTime| timesince }}</td>
                 <td>{{ li.fields.taskTime }}小时</td>
                 {% if li.fields.strategy == 1 %}
 
@@ -54,38 +57,43 @@
                 {% elif li.fields.strategy == 3 %}
 
                     <td style="background-color: blue;color:white; ">1级管理者安排</td>
-                    {#                    1级管理者安排,任务调整 只能是下一级且是本部门的#}
+                    1级管理者安排,任务调整 只能是下一级且是本部门的
 
                 {% elif li.fields.strategy == 4 %}
 
                     <td style="background-color: darkviolet;color:white; ">管理级安排</td>
-                    {#          管理级安排只能是下级 #}
+                    管理级安排只能是下级
                 {% elif li.fields.strategy == 5 %}
 
                     <td style="background-color: red;color:black; ">紧急</td>
 
                 {% endif %}
-                {#                    <td style="color:rosybrown">{{ li.fields.strategy }}</td>#}
+                <td style="color:rosybrown">{{ li.fields.strategy }}</td>
 
+                {% if li.fields.taskLevel == 1 %}
+                    <td data-taskLevel="{{ li.fields.taskLevel }}"> 需再分解</td>
+                {% elif li.fields.taskLevel == 2 %}
+                    <td data-taskLevel="{{ li.fields.taskLevel }}"> 可执行</td>
+                {% endif %}
 
-                <td>{{ li.fields.taskLevel }}</td>
                 <td>{{ li.fields.selectPost }}</td>
                 <td>{{ li.fields.selectEmp }}</td>
                 <td>
                     {% if li.fields.state == 0 %}
-                        <button class="taskSure">任务确认</button>
+                        <button class="taskSure" name="taskSure">任务确认</button>
                     {% elif li.fields.state == 1 %}
                         执行中
 
-                        <button>执行完成</button>
+                        <button name="submitTaskCheck">执行完成</button>
                         {% if li.fields.strategy == 1 or li.fields.strategy == 2 %}
                             <button>调整执行顺序</button>
                         {% endif %}
                         {% if li.fields.taskLevel == 1 %}
-                            <button class="taskGoResolvej" >继续分解任务</button>
+                            <button class="taskGoResolvej">继续分解任务</button>
                         {% endif %}
                     {% elif li.fields.state == 2 %}
                         <span style="color:yellow;background-color: rgba(79,102,206,0.87)">执行完成 ,验收中</span>
+
                     {% elif li.fields.state == 3 %}
                         <span style="background-color:chartreuse">验收后,提前完成</span>
                     {% elif li.fields.state == 4 %}
@@ -96,12 +104,22 @@
                     {% endif %}
 
                 </td>
+
             </tr>
+
+
         {% endfor %}
 
         </tbody>
     </table>
 </div>
+{#<div id="test">#}
+{#     {% for li in list %}#}
+{#    <i>{{ forloop.counter }}</i>#}
+{#    {% empty %}#}
+{#    <i>1</i>#}
+{#    {% endfor %}#}
+{#</div>#}
 <div id="messageDiv" style="display: none">
     messageDiv
 </div>
