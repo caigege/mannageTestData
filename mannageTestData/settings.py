@@ -14,7 +14,7 @@ from pathlib import Path
 import os
 #配置静态资源
 STATIC_URL='/static'
-ROOT_PATH = 'F:\\mannageTestData'
+ROOT_PATH = 'E:\\mannageTestData'
 STATICFILES_DIRS = (os.path.join(ROOT_PATH,'static'),)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -106,7 +106,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',  # 数据库引擎
         'NAME': 'manager', #数据库名称
         'USER':'root', # 连接数据库的用户名称
-        'PASSWORD':'123',  # 用户密码
+        'PASSWORD':'123456',  # 用户密码
         'HOST':'localhost', # 访问的数据库的主机的ip地址
         'PORT':'3306'# 默认mysql访问端口
     }
@@ -130,7 +130,8 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
+# AUTH_USER_MODEL = 'mannageTestData.model'
+# AUTH_USER_MODEL = 'users.User'
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/

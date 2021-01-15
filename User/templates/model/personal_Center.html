@@ -41,9 +41,7 @@
 
                 <td>{{ li.fields.taskName }}</td>
                 <td>{{ li.fields.content }}</td>
-                <td>{{ li.fields.startTime| date:"YYYY-MM-DD HH:mm:ss" }}</td>
                 <td>{{ li.fields.startTime| date:"Y-m-d H:i:s" }}</td>
-                <td>{{ li.fields.startTime| timesince }}</td>
                 <td>{{ li.fields.taskTime }}小时</td>
                 {% if li.fields.strategy == 1 %}
 
@@ -68,7 +66,6 @@
                     <td style="background-color: red;color:black; ">紧急</td>
 
                 {% endif %}
-                <td style="color:rosybrown">{{ li.fields.strategy }}</td>
 
                 {% if li.fields.taskLevel == 1 %}
                     <td data-taskLevel="{{ li.fields.taskLevel }}"> 需再分解</td>

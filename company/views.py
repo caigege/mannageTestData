@@ -111,7 +111,7 @@ def addPost(request):
     objs = {"depK": depK, "post": post}
     result = createData(postObj, "post", objs)
     print("result", result)
-    if (result is True):
+    if (type(result) is post):
         msg = {"message": "添加成功"}
     elif (result == "已存在"):
         msg = {"message": "已存在"}
@@ -449,7 +449,7 @@ def companyC(request):
     Users_Html = User.objects.filter(postStatus=1).order_by("creatTime")
 
     # 页码 / 总页码
-    p_Html = int("2")
+    p_Html = int("1")
     page_size = 10
     pagtor = Paginator(Users_Html, per_page=page_size)
 
@@ -463,7 +463,7 @@ def companyC(request):
     PageNum_Html = len(Page.object_list)
     # 对象
     page_User_Html = pagtor.page(p_Html).object_list  # 返回对应页码
-
+    # page_User_Html
     page_range_Html = pagtor.page_range
     # print(page_range_Html)
     types = "user"
@@ -473,6 +473,8 @@ def companyC(request):
     for tl in types_list:
         types_list[j]['name'] = tl['name'].split("-")[1]
         j += 1
+        
+
     return render(request, "model/company_Center.html", locals())
 
 

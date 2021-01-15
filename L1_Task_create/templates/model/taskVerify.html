@@ -4,7 +4,6 @@
     <meta charset="UTF-8" http-equiv="Cache" content="no-cache">
     <script src="/static/js/jquery-3.5.1.min.js"></script>
     <script src="/static/js/jquery.form.js"></script>
-
     <script src="/static/js/taskJs.js"></script>
     <link rel="stylesheet" type="text/css" href="/static/css/table.css"/>
     <title>任务验收</title>
@@ -61,15 +60,15 @@
                 <td>{{ li.fields.selectEmp }}</td>
                 <td>
                     <select>
-                        <option>继续</option>
-                        <option>延期执行</option>
-                        <option>废除(终止任务）</option>
-                        <option>回收再发布(关联上次任务)</option>
+                        <option value="1">继续</option>
+                        <option value="2">延期执行</option>
+                        <option value="3">废除(终止任务）</option>
+                        <option value="4">回收再发布(关联上次任务)</option>
                     </select>
 
                 </td>
                 <td>
-                    <button id="sava" name="sava">确认验收结果</button>
+                    <button id="save" name="sava">确认验收结果</button>
                 </td>
 
             </tr>

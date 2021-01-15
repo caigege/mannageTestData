@@ -14,11 +14,43 @@ from django.core import serializers
 from User.views import getUser
 from django.shortcuts import render
 # Create your views here.
+from django.views.decorators.csrf import csrf_exempt
+@csrf_exempt
+def taskVerifyResult(requset):
+    '''
+    处理审核结果 1 继续 ，
+    2 延期执行 作为新的任务发布
+    3 废除终止 不在换方案属于不相干或是错误任务
+    4 回收再发布，换个方案在执行的
+    :param requset:
+    :return:
+    '''
+    selec=requset.POST.get("selec")
+    # todo 要记录任务过程
+    print("selec",type(selec),selec)
+    if(selec=="1"):
+        pass
+    elif(selec=="2"):
+        pass
+    elif(selec=="3"):
+        pass
+    elif(selec=="4"):
+        pass
+
+    # todo 20210115
+
+
+    return HttpResponse("处理成功")
+
+
+
+
+
 '''选择日期创建任务'''
 
 def taskVerify(request):
     user=request.session.get("user")
-    user="13312345678" # todo 测试处理
+    user="13200000001" # todo 测试处理
     task=Task.objects.filter(taskCreater=user,state=2)
     # task=Task.objects.filter(taskCreater="\'"+user+"\'",state=2)
     result = serializers.serialize("python", task)
