@@ -60,10 +60,12 @@
                 <td>{{ li.fields.selectEmp }}</td>
                 <td>
                     <select>
-                        <option value="1">继续</option>
-                        <option value="2">延期执行</option>
-                        <option value="3">废除(终止任务）</option>
-                        <option value="4">回收再发布(关联上次任务)</option>
+                        <option value="1">继续(未超时)</option>
+                        <option value="2">加急</option>
+                        <option value="3">延期执行</option>
+                        <option value="4">废除(终止任务）</option>
+                        <option value="5">回收再发布(关联上次任务，记录任务发布的有效性)</option>
+                        <option value="6">暂停，项目封闭(包括其子任务）</option>
                     </select>
 
                 </td>

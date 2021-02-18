@@ -29,6 +29,7 @@ def taskVerifyResult(requset):
     # todo 要记录任务过程
     print("selec",type(selec),selec)
     if(selec=="1"):
+        # 前端已经判断时间 还是要判断，不然系统时间会出问题，而且延迟2秒缓冲 保证计算时间在分钟内精确
         pass
     elif(selec=="2"):
         pass
@@ -36,7 +37,10 @@ def taskVerifyResult(requset):
         pass
     elif(selec=="4"):
         pass
-
+    elif (selec == "5"):
+        pass
+    elif (selec == "6"):
+        pass
     # todo 20210115
 
 
