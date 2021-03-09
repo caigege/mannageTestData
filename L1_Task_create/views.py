@@ -26,7 +26,7 @@ def taskVerifyResult(requset):
     :return:
     '''
     selec=requset.POST.get("selec")
-    # todo 要记录任务过程
+    # todo 要记录任务过程1
 
     print("selec",type(selec),selec)
     if(selec=="1"):
