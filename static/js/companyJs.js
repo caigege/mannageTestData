@@ -18,6 +18,7 @@ $(document).ready(function () {
 
 
     $("button[name='project']").click(function () {
+
         showOption($(".project"))
         $.get("/company/getProject/", function (data) {
             // alert(typeof  data)

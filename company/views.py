@@ -27,6 +27,7 @@ def getProject(request):
     obj = {"companyId": company,"project":project}
     res = views.getVualeAllObj("project", "companyId", "companyId", obj)
     # res
+    print("this is getProject")
     # result=Test_Data.resultoK
     # lists = Test_Data.resultoKstr
     s=serializers.serialize("python",res)
@@ -381,12 +382,12 @@ def addEmp(request, id):
     if (users.name == "" or users.name is None):
         employee['name'] = str(users.phone)
     else:
-        employee['name'] = users.name
+        employee['name'] = "\'" + users.name+"\'"
 
     if (users.education == "" or users.education is None):
         employee['education'] = "\'大专\'"
     else:
-        employee['education'] = users.education
+        employee['education'] = "\'" + users.education+"\'"
 
     employee['phone'] = users.phone
     employee['companyId'] = 'company'
