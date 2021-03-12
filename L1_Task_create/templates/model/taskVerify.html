@@ -28,7 +28,7 @@
         <tbody>
         {% for li in list %}
             <tr>
-                <td>{{ forloop.counter }}</td>
+                <td id="{{ li.pk }}">{{ forloop.counter }}</td>
                 <td>{{ li.fields.taskName }}</td>
                 <td>{{ li.fields.content }}</td>
                 <td>{{ li.fields.startTime| date:"Y-m-d H:i:s" }}</td>
@@ -60,6 +60,8 @@
                 <td>{{ li.fields.selectEmp }}</td>
                 <td>
                     <select>
+{#                        todo 增加通过状态#}
+                        <option value="0">通过</option>
                         <option value="1">继续(未超时)</option>
                         <option value="2">加急</option>
                         <option value="3">延期执行</option>

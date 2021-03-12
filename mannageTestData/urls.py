@@ -67,6 +67,7 @@ urlpatterns = [
     path('task/sureTask/', UserView.sureTask),
     path('task/taskVerify/', L1_Task_createView.taskVerify),
     path('task/taskVerifyResult/', L1_Task_createView.taskVerifyResult),
+    # path('task/taskDo/', L1_TaskDo),
 
     # path('sys/login/', loginView.fristPage, name='login'),
 ]
