@@ -194,7 +194,8 @@ def create_Task(request):
     print("rert",type(rert) is L1_Task_create.models.Task)
     if(type(rert) is L1_Task_create.models.Task):
         rert={"success":"添加成功"}
-    rert={"erro":"任务名"+rert['mgs']}
+    else:
+        rert={"erro":"任务名"+rert['mgs']}
     # res=serializers.serialize("python",rert)
     # print(locals())
     # if()
