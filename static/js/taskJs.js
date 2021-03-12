@@ -1,26 +1,47 @@
 // $(document).ready(function () {
 
 $(document).ready(function () {
+    function DateToStr(date){
+      let Y=  date.getFullYear()
+      let M=  date.getMonth()+1
+      let D=  date.getDay()
+      let hh=  date.getHours()
+      let mm= date.getMinutes()
+      let ss= date.getSeconds()
+        return Y+"-"+M+"-"+D+" "+hh+":"+mm+":"+ss
+    }
     $("#taskVerify tbody").on("click", "button[name='sava']", function () {
-        // alert(1) $("#taskVerify tbody").parent().parent().find("td :eq(2)").val()
+        console.log("111")
+        // 方案选择
         var selec = $(this).parent().parent().find("select option:selected").attr("value");
         console.log("button[name='save'] ;" + selec)
         // 时间计算
         // TODO 工作时间为详细处理
-        var finshiTimeStr = $("button[name='sava']").parent().parent().find("td").eq(3).text()
+        //id
+
+        var taskId = $("button[name='sava']").parent().parent().find("td").eq(0).attr("id")
+        console.log("taskId："+taskId)
+        //工作开始时间
+        var workStartTime = $("button[name='sava']").parent().parent().find("td").eq(3).text()
+        //工作时长
         var workTimeStr = $("button[name='sava']").parent().parent().find("td").eq(4).text().split("小时")[0]
-        let finshiTime = new Date(finshiTimeStr)
-        finshiTime.setHours(finshiTime.getHours() + parseInt(workTimeStr))
+        //结束时间
+        let finshiTime = new Date(workStartTime)
+        let finshiTimeWF=finshiTime.setHours(finshiTime.getHours() + parseInt(workTimeStr))
         finshiTime.setMinutes(finshiTime.getMinutes() + 30)
+
+
         switch (selec) {
+
             case "1" :
-                if (finshiTime <= new Date()) {
+                //todo finshiTime >= new Date()  测试用调试
+                if (finshiTime >= new Date()) {
                     alert("任务已超时,若要继续 请选择加急")
                     return
+                } else {
+                    // todo请求任务绩效执行,单个任务失败次数记录1次
+
                 }
-                // else {
-                    //todo请求任务绩效执行 单个任务失败次数记录1次
-                // }
                 break;
             case "2" :
                 if (finshiTime <= new Date()) {
@@ -39,6 +60,7 @@ $(document).ready(function () {
                         }
                     } else if (timeIns === "") {
                         alert("请输入时间")
+                        return
                     } else {
                         //    取消
                         return
@@ -82,9 +104,25 @@ $(document).ready(function () {
                 break;
 
         }
-        $.post("/task/taskVerifyResult/", {"selec": selec}, function () {
 
-        })
+        $.post("/task/taskVerifyResult/", {
+                        "finshiTime": finshiTime.getTime(),
+                        "taskId":taskId,
+                        "selec":selec,
+            "finshiTimeWF":finshiTimeWF
+                    }, function (postdata) {
+                        var JSONpostdata = JSON.parse(postdata)
+                        if (JSONpostdata.result=="erro"){
+                          alert(JSONpostdata.content)
+                        }else{
+                            window.location.reload()
+                        }
+
+                        // alert(JSONpostdata.message)
+                        // $(this).parent().parent().remove()
+
+
+                    })
     })
 
 })

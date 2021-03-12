@@ -24,7 +24,7 @@ name	为你的 URL 取名能使你在 Django 的任意地方唯一地引用它�
 """
 from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-from django.urls import path
+from django.urls import path,include
 
 from L1_Task_create import views as L1_Task_createView
 from User import views as UserView
@@ -67,6 +67,7 @@ urlpatterns = [
     path('task/sureTask/', UserView.sureTask),
     path('task/taskVerify/', L1_Task_createView.taskVerify),
     path('task/taskVerifyResult/', L1_Task_createView.taskVerifyResult),
+    # path('task/taskDo/', L1_TaskDo),
 
     # path('sys/login/', loginView.fristPage, name='login'),
 ]

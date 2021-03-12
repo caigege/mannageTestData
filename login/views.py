@@ -1,17 +1,17 @@
 import re
-import secrets
 import time
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
-from company.models import Company,department,post
 
-from login.models import User
-from employee.models import emp
 from business.models import project
-from L1_Task_create.models import Task
+from company.models import Company, department, post
+from employee.models import emp
+from login.models import User
+
+
 @csrf_exempt
 def exit(request):
     del request.session["user"]
@@ -30,7 +30,8 @@ def exit(request):
 
     return JsonResponse(msg)
 
-def  fristPage(request):
+
+def fristPage(request):
     '''
     :param request: 首頁
     :return:
@@ -59,7 +60,6 @@ def login(request):
                 print(password)
                 user = getVuale("User", "phone", account)
                 passwordDB = user.password
-
 
                 print("passwordDB: " + passwordDB)
                 if (password == passwordDB):
@@ -91,8 +91,8 @@ def login(request):
                     # request.session['is_login'] = True
                     request.session['user'] = account
                     request.session['csrftoken'] = cookie
-                    result=render(request, 'model/welcom.html', {'msg': '企业版'})
-                    result.set_cookie('csrftoken',cookie)
+                    result = render(request, 'model/welcom.html', {'msg': '企业版'})
+                    result.set_cookie('csrftoken', cookie)
                     return result
             return render(request, 'model/erro/loginErro.html', {'error_msg': '账号/或密码错误'})
         else:
@@ -100,29 +100,27 @@ def login(request):
         # ----------------------------------
     return render(request, 'model/erro/loginErro.html', {'error_msg': 'get请求异常'})
 
+
 def auth(func):
     # token验证
-    def inner(request,*args,**kwargs):
-        v=request.COOKIES.get('csrftoken')
+    def inner(request, *args, **kwargs):
+        v = request.COOKIES.get('csrftoken')
         if not v:
-            return  redirect('/sys/welcome/')
-        return func(request,*args,**kwargs)
+            return redirect('/sys/welcome/')
+        return func(request, *args, **kwargs)
+
     return inner
 
 
 def postCheck(func):
     # 请求验证
-    def inner(request,*args,**kwargs):
-        v=request.method=='POST'
+    def inner(request, *args, **kwargs):
+        v = request.method == 'POST'
         if not v:
             render(request, 'model/erro/loginErro.html', {'error_msg': '类型异常'})
-        return func(request,*args,**kwargs)
+        return func(request, *args, **kwargs)
+
     return inner
-
-
-
-
-
 
 
 # def welcome(request):
@@ -140,11 +138,12 @@ def check(table, field, fieldObject):
     :param fieldObject: 字段值
     :return: Ture 存在 False 不存在
     '''
-    print("fieldObject: "+fieldObject)
+    print("fieldObject: " + fieldObject)
     checkObject = "judge=" + table + ".objects.get(" + field + "=\'" + fieldObject + "\')"
-    print("checkObject :"+checkObject)
+    print("checkObject :" + checkObject)
     try:
         exec(checkObject)
+        # post
         return True
     except ObjectDoesNotExist:
         return False
@@ -166,14 +165,15 @@ def getVuale(table, field, fieldObject):
         result = eval(checkObject)
     except:
         checkObject = table + ".objects.get(" + field + "=" + str(fieldObject) + ")"
-        print("checkObject except :"+checkObject)
+        # project
+        print("checkObject except :" + checkObject)
         result = eval(checkObject)
     # print("result:" + str(result))
 
     return result
 
 
-def getVualeStr(table, field, fieldObject:str):
+def getVualeStr(table, field, fieldObject: str):
     '''
     获取单个对象
     :param table: String：  models. class 类名
@@ -190,14 +190,13 @@ def getVualeStr(table, field, fieldObject:str):
     except:
         # checkObject = table + ".objects.get(" + field + "=" + str(fieldObject) + ")"
         # print("checkObject except :"+checkObject)
-        result = {"msg":"未查询到"}
+        result = {"msg": "未查询到"}
     # print("result:" + str(result))
 
     return result
 
 
-
-def getVualeAllObj(table, field, fieldObject,objs):
+def getVualeAllObj(table, field, fieldObject, objs):
     '''
     获取单个对象 传对象 外键
     :param table: String：  models. class 类名
@@ -210,7 +209,7 @@ def getVualeAllObj(table, field, fieldObject,objs):
 
     # print(checkObject)
 
-    result = eval(checkObject,objs)
+    result = eval(checkObject, objs)
     # print("result:" + str(result))
 
     return result
@@ -225,7 +224,6 @@ def getAllVuale(table, field, fieldObject):
     :return:
     '''
     checkObject = table + ".objects.filter(" + field + "=" + fieldObject + ")"
-
     print(checkObject)
     try:
         result = eval(checkObject)
@@ -248,7 +246,6 @@ def register(request):
         typeL = request.POST.get("type")
         companyName = request.POST.get("companyName")
 
-
         if (re.match("^1[3456789]\d{9}$", account) == None):
             return render(request, 'model/erro/loginErro.html', {'error_msg': '输入正确手机号' + account})
 
@@ -261,7 +258,7 @@ def register(request):
                 companyNameJp = check("Company", "account", account)
                 if (companyNameJp):
                     return render(request, 'model/erro/loginErro.html', {'error_msg': '与公司名重复请重新注册'})
-                User.objects.create(phone=account, password=password,creatTime=time.strftime('%Y-%m-%d %H:%M:%S'))
+                User.objects.create(phone=account, password=password, creatTime=time.strftime('%Y-%m-%d %H:%M:%S'))
                 return render(request, 'model/welcom.html', {'msg': '个人版'})
 
             return render(request, 'model/erro/loginErro.html', {'error_msg': '手机号已注册'})
@@ -274,7 +271,6 @@ def register(request):
                 else:
                     companyNameJp = check("Company", "name", companyName)
                     if (companyNameJp == False):
-
                         Company.objects.create(account=account, password=password, name=companyName)
                         return render(request, 'model/welcom.html', {'msg': '企业版'})
                     return render(request, 'model/erro/loginErro.html', {'error_msg': '公司名重复'})
