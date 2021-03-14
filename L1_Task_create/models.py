@@ -47,6 +47,7 @@ id是唯一的 主键
             
 任务级别  1:方向级 2:分解任务级 3：任务可执行级
 任务策略 1 2 3 4 5
+优先级别 默认为1 级别越高优先等级越低
 
 date=time(),who="小米",taskName="任务名",taskContent="任务内容",starTime 
 '''
@@ -68,6 +69,7 @@ class Task(models.Model):
 
     strategy = models.IntegerField('任务策略', default=1)
     taskLevel = models.IntegerField('任务级别', default=1)
+    priorityLevel = models.IntegerField('优先级别', default=1)
     selectDep = models.CharField('部门', max_length=100)
     selectPost = models.CharField('岗位', max_length=100)
     selectEmp = models.CharField('任务指派', max_length=100)

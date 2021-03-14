@@ -8,7 +8,7 @@ from django.shortcuts import render
 from django.utils import timezone
 # Create your views here.
 from django.views.decorators.csrf import csrf_exempt
-
+from tools import tool_time
 import L1_Task_create
 from L1_Task_create.models import Task
 from company import views as companyView
@@ -26,6 +26,10 @@ from login import views
             # 7 时间计划提前执行 （不考虑）
 '''
 
+
+
+
+
 @csrf_exempt
 def taskVerifyResult(requset):
     '''
@@ -33,7 +37,7 @@ def taskVerifyResult(requset):
     0 通过
     1 继续
     2 加急
-    3 延期执行 作为新的任务发布
+    3 延期执行 作为新的任务发布（任务状态改为0)
     4 废除终止 不在换方案属于不相干或是错误任务
     5 回收再发布，换个方案在执行的
     6 暂停，项目封闭(包括其子任务
@@ -48,12 +52,14 @@ def taskVerifyResult(requset):
     taskId = requset.POST.get("taskId")
     # 标准完成时间
     finshiTimeWF = requset.POST.get("finshiTimeWF")
+    workTime = requset.POST.get("workTime")
     # request.POST.get("phone")
     # todo 要记录任务过程1
 
     print("selec", type(selec), selec)
     print("finshiTime", type(finshiTime), finshiTime)
     print("taskId", type(taskId), taskId)
+    print("workTime", type(workTime), workTime)
     finshiTime_long = int(finshiTime) / 1000
     finshiTimeWF_long = int(finshiTimeWF) / 1000
     # time.time()
@@ -89,11 +95,15 @@ def taskVerifyResult(requset):
         return HttpResponse(json.dumps(rert, ensure_ascii=False))
     elif (selec == "2"):
         # todo 记录任务时间 和状态
-        # 设置更新工作时长,工作开始时间
-        'test'
-        Task.objects.filter(id=taskId).update(state=0,)
-        pass
+        # 设置更新工作时长,工作开始时间，任务状态为确认状态
+        # 'test'
+
+        Task.objects.filter(id=taskId).update(state=0,startTime=tool_time.getDBtime(time.time()+int(workTime)*60*60),taskTime=workTime)
     elif (selec == "3"):
+        res=Task.objects.filter(id=taskId)
+        print("res:",type(res),res.get("pk"))
+
+        # Task.objects.filter(id=taskId).update(state=0)
         pass
     elif (selec == "4"):
         pass
@@ -115,7 +125,7 @@ def taskVerifyResult(requset):
 
 def taskVerify(request):
     user = request.session.get("user")
-    user = "13312345678"  # todo 测试处理
+    user = "13200000001"  # todo 测试处理
     task = Task.objects.filter(taskCreater=user, state=2)
     # task=Task.objects.filter(taskCreater="\'"+user+"\'",state=2)
     result = serializers.serialize("python", task)

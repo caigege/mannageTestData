@@ -1,15 +1,16 @@
 // $(document).ready(function () {
 
 $(document).ready(function () {
-    function DateToStr(date){
-      let Y=  date.getFullYear()
-      let M=  date.getMonth()+1
-      let D=  date.getDay()
-      let hh=  date.getHours()
-      let mm= date.getMinutes()
-      let ss= date.getSeconds()
-        return Y+"-"+M+"-"+D+" "+hh+":"+mm+":"+ss
+    function DateToStr(date) {
+        let Y = date.getFullYear()
+        let M = date.getMonth() + 1
+        let D = date.getDay()
+        let hh = date.getHours()
+        let mm = date.getMinutes()
+        let ss = date.getSeconds()
+        return Y + "-" + M + "-" + D + " " + hh + ":" + mm + ":" + ss
     }
+
     $("#taskVerify tbody").on("click", "button[name='sava']", function () {
         console.log("111")
         // 方案选择
@@ -20,14 +21,14 @@ $(document).ready(function () {
         //id
 
         var taskId = $("button[name='sava']").parent().parent().find("td").eq(0).attr("id")
-        console.log("taskId："+taskId)
+        console.log("taskId：" + taskId)
         //工作开始时间
         var workStartTime = $("button[name='sava']").parent().parent().find("td").eq(3).text()
         //工作时长
         var workTimeStr = $("button[name='sava']").parent().parent().find("td").eq(4).text().split("小时")[0]
         //结束时间
         let finshiTime = new Date(workStartTime)
-        let finshiTimeWF=finshiTime.setHours(finshiTime.getHours() + parseInt(workTimeStr))
+        let finshiTimeWF = finshiTime.setHours(finshiTime.getHours() + parseInt(workTimeStr))
         finshiTime.setMinutes(finshiTime.getMinutes() + 30)
 
 
@@ -104,25 +105,26 @@ $(document).ready(function () {
                 break;
 
         }
-
+        timeIns
         $.post("/task/taskVerifyResult/", {
-                        "finshiTime": finshiTime.getTime(),
-                        "taskId":taskId,
-                        "selec":selec,
-            "finshiTimeWF":finshiTimeWF
-                    }, function (postdata) {
-                        var JSONpostdata = JSON.parse(postdata)
-                        if (JSONpostdata.result=="erro"){
-                          alert(JSONpostdata.content)
-                        }else{
-                            window.location.reload()
-                        }
+            "finshiTime": finshiTime.getTime(),
+            "taskId": taskId,
+            "selec": selec,
+            "finshiTimeWF": finshiTimeWF,
+            "workTime": timeIns
+        }, function (postdata) {
+            var JSONpostdata = JSON.parse(postdata)
+            if (JSONpostdata.result == "erro") {
+                alert(JSONpostdata.content)
+            } else {
+                window.location.reload()
+            }
 
-                        // alert(JSONpostdata.message)
-                        // $(this).parent().parent().remove()
+            // alert(JSONpostdata.message)
+            // $(this).parent().parent().remove()
 
 
-                    })
+        })
     })
 
 })

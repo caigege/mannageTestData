@@ -190,8 +190,8 @@ from  xxxxx import views
     python manage.py sqlmigrate xxxxx 0001
   命令 1.  python manage.py makemigrations xxxxx   
        2.  python manage.py sqlmigrate model 0001
-       3.  python manage.py migrate /
-           python    manage.py   makemigrations
+       3.   ii python manage.py migrate /
+           i python    manage.py   makemigrations
            
         A.   　直接在命令行执行命令 ： python    manage.py   makemigrations    或     python    manage.py   makemigrations   app_name
 
