@@ -1,7 +1,7 @@
 import datetime
 import json
 import time
-
+from django.db.models import Max
 from django.core import serializers
 from django.http import HttpResponse
 from django.shortcuts import render
@@ -99,12 +99,39 @@ def taskVerifyResult(requset):
         # 'test'
 
         Task.objects.filter(id=taskId).update(state=0,startTime=tool_time.getDBtime(time.time()+int(workTime)*60*60),taskTime=workTime)
-    elif (selec == "3"):
-        res=Task.objects.filter(id=taskId)
-        print("res:",type(res),res.get("pk"))
 
-        # Task.objects.filter(id=taskId).update(state=0)
-        pass
+    elif (selec == "3"):
+        # 延期
+        res=Task.objects.get(id=taskId)
+
+        print("res.priorityLevel:",type(res.priorityLevel),res.priorityLevel)
+        print("res.projectId:",type(res.projectId),res.projectId)
+        print("res.strategy:",type(res.strategy),res.strategy)
+        # 优先级别
+        priorityLevel=res.priorityLevel
+        # 项目id
+        projectId=res.projectId
+        # 权重
+        strategy=res.strategy
+        startTime=Task.objects.filter(strategy=strategy,projectId=projectId).all().aggregate(Max("startTime"))
+        print("startTime：",startTime)
+
+        workTime=Task.objects.filter(startTime=startTime["startTime__max"],projectId=projectId).all().aggregate(Max("taskTime"))
+        # print("workTime：", workTime)
+
+        sTime=tool_time.getTimeStamp(startTime["startTime__max"])+workTime["taskTime__max"]*60*60
+        print("sTime：", sTime)
+        if time.time()>sTime:
+            sDBTime =tool_time.getDBtime(time.time())
+        else:
+            # 如果时间超过当前，则用计算时间
+            sDBTime =tool_time.getDBtime(sTime)
+        print("sDBTime：", sDBTime)
+        # 查询项目中 同级（权重）中人物开始时间最大的 和工作时间后的时间作为开始时间 同项目
+
+        Task.objects.filter(id=taskId).update(state=0,priorityLevel=priorityLevel+1,startTime=sDBTime)
+        rert = {"result": "success", "content": "更新成功"}
+        return HttpResponse(json.dumps(rert, ensure_ascii=False))
     elif (selec == "4"):
         pass
     elif (selec == "5"):
@@ -125,7 +152,8 @@ def taskVerifyResult(requset):
 
 def taskVerify(request):
     user = request.session.get("user")
-    user = "13200000001"  # todo 测试处理
+    # user = "13200000001"  # todo 测试处理
+    user = "13312345678"  # todo 测试处理 g
     task = Task.objects.filter(taskCreater=user, state=2)
     # task=Task.objects.filter(taskCreater="\'"+user+"\'",state=2)
     result = serializers.serialize("python", task)
@@ -152,6 +180,10 @@ def taskFinshiSubmit(request):
     Task.objects.filter(id=pk).update(state=2)
 
     return HttpResponse("更新数据成功")
+def checkEmpDayWorkPlan():
+    # 员工id
+    empId=""
+    # 时间
 
 
 @csrf_exempt
@@ -189,9 +221,12 @@ def create_Task(request):
     if (content == ''):
         result = {"erro": "异常:内容为空"}
         return HttpResponse(json.dumps(result, ensure_ascii=False))
+    # todo 查询员工当天 是否有工作安排已满
+
 
     if (nowOrNot is None):
         #      没选中“马上开始" 10分钟后开始,todo 获取任务排班表后得出结论 未对时间做严禁判断
+
         startTime = startTime.split("T")[0] + " " + startTime.split("T")[1]
         try:
             startTime = startTime + ":00"
@@ -207,7 +242,7 @@ def create_Task(request):
         # 选“马上开始"
         startTime = timezone.now().strftime("%Y-%m-%d %H:%M:%S")
     print("create_Task: ", locals())
-
+    endTime=startTime+datetime.timedelta(minutes=int(taskTime)*60)
     # 部门前端判断
     if (judgeTaskselect(request, selectDep)):
         result = {"erro": "异常:部门未选择"}
@@ -242,6 +277,7 @@ def create_Task(request):
     task['content'] = "\'" + content + "\'"
     task['createTime'] = "\'" + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "\'"
     task['startTime'] = "\'" + str(startTime) + "\'"
+    task['endTime'] = "\'" + str(endTime) + "\'"
     task['taskTime'] = "\'" + taskTime + "\'"
     task['strategy'] = strategy
     task['taskLevel'] = taskLevel
@@ -267,10 +303,4 @@ def create_Task(request):
     # print(locals())
     # if()
     return HttpResponse(json.dumps(rert, ensure_ascii=False))
-    # render("创建任务")
 
-# date=time(),who="小米",taskName="任务名",taskContent="任务内容"
-
-# def create_Task(request):
-#
-#     return HttpResponse("创建任务")

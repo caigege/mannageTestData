@@ -65,6 +65,7 @@ class Task(models.Model):
     createTime = models.DateTimeField("任务创建时间", auto_now_add=True)
     startTime = models.DateTimeField("任务开始时间", blank=True, null=True)
     taskTime = models.IntegerField('工作时间长', default=0)
+    endTime = models.DateTimeField("任务计划结束时间", blank=True, null=True)
     state = models.IntegerField('任务状态', default=0)
 
     strategy = models.IntegerField('任务策略', default=1)

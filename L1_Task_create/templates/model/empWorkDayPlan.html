@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+     <meta charset="UTF-8" http-equiv="Cache" content="no-cache">
+    <script src="/static/js/jquery-3.5.1.min.js"></script>
+    <script src="/static/js/jquery.form.js"></script>
+    <title>Title</title>
+</head>
+<body>
+<div id="taskVerify">
+    <table id="taskInfoTable" class="pure-table pure-table-bordered">
+        <thead>
+        <tr>
+            <td>序号</td>
+            <td>任务名</td>
+            <td>任务内容</td>
+            <td>任务开始时间</td>
+            <td>工作时间长</td>
+            <td>任务权重</td>
+            <td>岗位</td>
+            <td>任务指派</td>
+            <td>验收操作</td>
+            <td>操作</td>
+        </tr>
+        </thead>
+        <tbody>
+        {% for li in list %}
+            <tr>
+                <td id="{{ li.pk }}">{{ forloop.counter }}</td>
+                <td>{{ li.fields.taskName }}</td>
+                <td>{{ li.fields.content }}</td>
+                <td>{{ li.fields.startTime| date:"Y-m-d H:i:s" }}</td>
+                <td>{{ li.fields.taskTime }}小时</td>
+                {% if li.fields.strategy == 1 %}
+
+
+                    <td style="background-color: white;color:black; ">普通按开始时间排序</td>
+
+                {% elif li.fields.strategy == 2 %}
+
+                    <td style="background-color: orange;color:black; ">执行者自行调整执行顺序</td>
+
+                {% elif li.fields.strategy == 3 %}
+
+                    <td style="background-color: blue;color:white; ">1级管理者安排</td>
+                    {#                    1级管理者安排,任务调整 只能是下一级且是本部门的#}
+
+                {% elif li.fields.strategy == 4 %}
+
+                    <td style="background-color: darkviolet;color:white; ">管理级安排</td>
+                    {#          管理级安排只能是下级 #}
+                {% elif li.fields.strategy == 5 %}
+
+                    <td style="background-color: red;color:black; ">紧急</td>
+
+                {% endif %}
+                <td>{{ li.fields.selectPost }}</td>
+                <td>{{ li.fields.selectEmp }}</td>
+                <td>
+                    <select>
+{#                        todo 增加通过状态#}
+                        <option value="0">通过</option>
+                        <option value="1">继续(未超时)</option>
+                        <option value="2">加急</option>
+                        <option value="3">延期执行</option>
+                        <option value="4">废除(终止任务）</option>
+                        <option value="5">回收再发布(关联上次任务，记录任务发布的有效性)</option>
+                        <option value="6">暂停，项目封闭(包括其子任务）</option>
+                    </select>
+
+                </td>
+                <td>
+                    <button id="save" name="sava">确认验收结果</button>
+                </td>
+
+            </tr>
+
+        {% empty %}
+            <tr>
+                <td>查询无数据</td>
+            </tr>
+            {#           <script>alert(1)</script>#}
+        {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+</body>
+</html>

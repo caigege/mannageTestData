@@ -116,9 +116,10 @@ $(document).ready(function () {
             var JSONpostdata = JSON.parse(postdata)
             if (JSONpostdata.result == "erro") {
                 alert(JSONpostdata.content)
-            } else {
-                window.location.reload()
             }
+
+                window.location.reload()
+
 
             // alert(JSONpostdata.message)
             // $(this).parent().parent().remove()

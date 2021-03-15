@@ -13,8 +13,8 @@ import pymysql
 from pathlib import Path
 import os
 #配置静态资源
-STATIC_URL='/static'
-ROOT_PATH = 'E:\\mannageTestData'
+STATIC_URL='/static/'
+ROOT_PATH = 'F:\\mannageTestData'
 STATICFILES_DIRS = (os.path.join(ROOT_PATH,'static'),)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -49,7 +49,9 @@ INSTALLED_APPS = [
     'company',
     'employee',
     'business',
-    'User'
+    'User',
+    'L1_TaskDo'
+
 
 
 ]
@@ -151,12 +153,13 @@ SILENCED_SYSTEM_CHECKS = ['fields.E300', 'fields.E307']
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
-STATIC_URL = '/static/'
+# STATIC_URL = '/static/'
 #---------------------步骤---------------------
 '''
 1.创建Django 项目
 1.1 启动 python manage.py runserver
 2.创造页面套餐包 python manage.py startapp xxxxx
+python manage.py startapp L1_TaskDo
 3.Setting 配置
 INSTALLED_APPS = [
     'django.contrib.admin',
