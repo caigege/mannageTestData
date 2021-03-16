@@ -24,8 +24,15 @@ $(document).ready(function () {
         console.log("taskId：" + taskId)
         //工作开始时间
         var workStartTime = $("button[name='sava']").parent().parent().find("td").eq(3).text()
+        //empId todo testUSE
+        var empId = $("button[name='sava']").parent().parent().find("td").eq(7).text()
+
         //工作时长
         var workTimeStr = $("button[name='sava']").parent().parent().find("td").eq(4).text().split("小时")[0]
+
+        //工作开始 todo testUSE
+        var  startTimeWO= $("button[name='sava']").parent().parent().find("td").eq(3).text().split("小时")[0]
+
         //结束时间
         let finshiTime = new Date(workStartTime)
         let finshiTimeWF = finshiTime.setHours(finshiTime.getHours() + parseInt(workTimeStr))
@@ -111,7 +118,9 @@ $(document).ready(function () {
             "taskId": taskId,
             "selec": selec,
             "finshiTimeWF": finshiTimeWF,
-            "workTime": timeIns
+            "workTime": timeIns,
+            "empId":empId,
+            "startTimeWO":startTimeWO
         }, function (postdata) {
             var JSONpostdata = JSON.parse(postdata)
             if (JSONpostdata.result == "erro") {

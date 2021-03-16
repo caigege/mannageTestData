@@ -35,7 +35,7 @@ def getDayStr(datetime):
     '''
      获取日期
     :param datetime:
-    :return: 日期 2000-01-02
+    :return: 日期 2000-01-02 str
     '''
     return dateTimeToStr(datetime).split(" ")[0]
 def  dateTimeToStr(datetime):
@@ -48,4 +48,4 @@ def  dateTimeToStr(datetime):
 
     #
     return datetime.strftime("%Y-%m-%d %H:%M:%S")
-print(getDayStr(dtimeTest))
+# print(getDayStr(dtimeTest))

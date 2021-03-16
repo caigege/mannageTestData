@@ -71,6 +71,7 @@ class Task(models.Model):
     strategy = models.IntegerField('任务策略', default=1)
     taskLevel = models.IntegerField('任务级别', default=1)
     priorityLevel = models.IntegerField('优先级别', default=1)
+
     selectDep = models.CharField('部门', max_length=100)
     selectPost = models.CharField('岗位', max_length=100)
     selectEmp = models.CharField('任务指派', max_length=100)

@@ -1,18 +1,27 @@
 import datetime
 import json
 import time
-from django.db.models import Max
+
 from django.core import serializers
+from django.db.models import Max
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.utils import timezone
 # Create your views here.
 from django.views.decorators.csrf import csrf_exempt
-from tools import tool_time
+
 import L1_Task_create
 from L1_Task_create.models import Task
 from company import views as companyView
 from login import views
+# from test.testTime import planTime
+# from test.testTime import workDay
+# from test import testTime.workDay
+from tools import tool_time
+from tools.tool_time import getDayStr, strToDateTime
+
+from L1_Task_create.testTime import workDay,dic
+
 '''
 任务状态    ---- 1:待分解（级别为1、2级 默认状态）----
             0:任务确认(01超时未确认，02强制回收（未确认状态）,意外回收（
@@ -25,9 +34,6 @@ from login import views
             6 延迟（执行中超时未完成）
             # 7 时间计划提前执行 （不考虑）
 '''
-
-
-
 
 
 @csrf_exempt
@@ -52,7 +58,14 @@ def taskVerifyResult(requset):
     taskId = requset.POST.get("taskId")
     # 标准完成时间
     finshiTimeWF = requset.POST.get("finshiTimeWF")
+    # 工作时长
     workTime = requset.POST.get("workTime")
+    # empId
+    empId = requset.POST.get("empId")
+    # todo 测试
+    empId = '13838682632'
+    # startTimeWO
+    startTimeWO = requset.POST.get("startTimeWO")
     # request.POST.get("phone")
     # todo 要记录任务过程1
 
@@ -60,6 +73,8 @@ def taskVerifyResult(requset):
     print("finshiTime", type(finshiTime), finshiTime)
     print("taskId", type(taskId), taskId)
     print("workTime", type(workTime), workTime)
+    print("startTimeWO", type(startTimeWO), startTimeWO)
+    print("empId", type(empId), empId)
     finshiTime_long = int(finshiTime) / 1000
     finshiTimeWF_long = int(finshiTimeWF) / 1000
     # time.time()
@@ -73,7 +88,7 @@ def taskVerifyResult(requset):
             rert = {"result": "erro", "content": "任务已超时，其选择其他验收方案"}
             return HttpResponse(json.dumps(rert, ensure_ascii=False))
         else:
-        #     可以继续,修改任务状态 为通知状态,需要再次确认 todo 记录任务未完成类型
+            #     可以继续,修改任务状态 为通知状态,需要再次确认 todo 记录任务未完成类型
 
             Task.objects.filter(id=taskId).update(state=0)
             rert = {"result": "success", "content": "更新成功"}
@@ -85,8 +100,8 @@ def taskVerifyResult(requset):
             Task.objects.filter(id=taskId).update(state=5)
 
         else:
-            if finshiTimeWF_long-1<time.time():
-            #     提前完成
+            if finshiTimeWF_long - 1 < time.time():
+                #     提前完成
                 Task.objects.filter(id=taskId).update(state=3)
             else:
                 # 顺利完成
@@ -98,41 +113,61 @@ def taskVerifyResult(requset):
         # 设置更新工作时长,工作开始时间，任务状态为确认状态
         # 'test'
 
-        Task.objects.filter(id=taskId).update(state=0,startTime=tool_time.getDBtime(time.time()+int(workTime)*60*60),taskTime=workTime)
+        Task.objects.filter(id=taskId).update(state=0,
+                                              startTime=tool_time.getDBtime(time.time() + int(workTime) * 60 * 60),
+                                              taskTime=workTime)
 
     elif (selec == "3"):
         # 延期
-        res=Task.objects.get(id=taskId)
+        res = Task.objects.get(id=taskId)
 
-        print("res.priorityLevel:",type(res.priorityLevel),res.priorityLevel)
-        print("res.projectId:",type(res.projectId),res.projectId)
-        print("res.strategy:",type(res.strategy),res.strategy)
+        print("res.priorityLevel:", type(res.priorityLevel), res.priorityLevel)
+        print("res.projectId:", type(res.projectId), res.projectId)
+        print("res.strategy:", type(res.strategy), res.strategy)
         # 优先级别
-        priorityLevel=res.priorityLevel
+        priorityLevel = res.priorityLevel
         # 项目id
-        projectId=res.projectId
+        projectId = res.projectId
         # 权重
-        strategy=res.strategy
-        startTime=Task.objects.filter(strategy=strategy,projectId=projectId).all().aggregate(Max("startTime"))
-        print("startTime：",startTime)
+        strategy = res.strategy
+        startTime = Task.objects.filter(strategy=strategy, projectId=projectId).all().aggregate(Max("startTime"))
+        print("startTime：", startTime)
 
-        workTime=Task.objects.filter(startTime=startTime["startTime__max"],projectId=projectId).all().aggregate(Max("taskTime"))
+        workTime = Task.objects.filter(startTime=startTime["startTime__max"], projectId=projectId).all().aggregate(
+            Max("taskTime"))
         # print("workTime：", workTime)
 
-        sTime=tool_time.getTimeStamp(startTime["startTime__max"])+workTime["taskTime__max"]*60*60
+        sTime = tool_time.getTimeStamp(startTime["startTime__max"]) + workTime["taskTime__max"] * 60 * 60
         print("sTime：", sTime)
-        if time.time()>sTime:
-            sDBTime =tool_time.getDBtime(time.time())
+        if time.time() > sTime:
+            sDBTime = tool_time.getDBtime(time.time())
         else:
             # 如果时间超过当前，则用计算时间
-            sDBTime =tool_time.getDBtime(sTime)
+            sDBTime = tool_time.getDBtime(sTime)
         print("sDBTime：", sDBTime)
         # 查询项目中 同级（权重）中人物开始时间最大的 和工作时间后的时间作为开始时间 同项目
 
-        Task.objects.filter(id=taskId).update(state=0,priorityLevel=priorityLevel+1,startTime=sDBTime)
+        Task.objects.filter(id=taskId).update(state=0, priorityLevel=priorityLevel + 1, startTime=sDBTime)
         rert = {"result": "success", "content": "更新成功"}
         return HttpResponse(json.dumps(rert, ensure_ascii=False))
     elif (selec == "4"):
+        #
+        # todo 测试
+        startTimeWO = "2021-01-12 18:00:00"
+        nextDay(strToDateTime(startTimeWO), empId)
+        # startTimeWO = "2021-01-12 18:00:00"
+        # day = getDayStr(strToDateTime(startTimeWO))
+        # print("day:", day)
+        # # st_amStart = day + " " + dic["workTime14"]["am"]["starTime"]
+        # # st_amEnd = day + " " + dic["workTime14"]["am"]["endTime"]
+        # st_amStart = day + " " + dic["workTime14"]["pm"]["starTime"]
+        # st_amEnd = day + " " + dic["workTime14"]["pm"]["endTime"]
+        # print("st_amStart:", st_amStart)
+        # print("st_amEnd:", st_amEnd)
+        # stTime = strToDateTime(st_amStart)
+        # endTime = strToDateTime(st_amEnd)
+        # am9_12(empId, endTime, stTime, "pm")
+
         pass
     elif (selec == "5"):
         pass
@@ -140,14 +175,118 @@ def taskVerifyResult(requset):
         pass
     # todo 20210115
 
-
     return HttpResponse("处理成功")
 
 
-
-
-
 '''选择日期创建任务'''
+
+
+def nextDay(guestStartTime, empId):
+    '''
+    :param guestStartTime:任务设置开始日期
+    :return: 任务开始时间
+    '''
+    day = getDayStr(guestStartTime)
+    # while True:
+    # 判断是否是假日
+    # 判断周几
+    # 是否调休
+    # 判断上午
+    # if planTime():
+
+    sWorkTime = whoSelect(guestStartTime)
+
+
+    # 判断 judgeStata=1,
+    st_amStart = day + " " + dic[sWorkTime]["am"]["starTime"]
+    st_amEnd = day + " " + dic[sWorkTime]["am"]["endTime"]
+    # 转化为 时间
+    stTime = strToDateTime(st_amStart)
+    endTime = strToDateTime(st_amEnd)
+
+    print("stTime:", stTime)
+    startTime = Task.objects.filter(selectEmp=empId, startTime__lt=stTime).aggregate(Max('startTime'))
+    # Task.objects.filter()
+    if startTime["startTime__max"] is None:
+        # 没有 比安排时间更短的时间
+        # 判断在时间内的
+
+        print("endTime:", endTime)
+        return am9_12(empId, endTime, stTime)
+
+    else:
+        # 获取最大值得关闭时间
+        endTimeGlTask = Task.objects.filter(startTime=startTime["startTime__max"], selectEmp=empId)[0].endTime
+        print("获取最大值得关闭时间endTime:", endTimeGlTask, type(endTimeGlTask))
+        if endTimeGlTask <= stTime:
+            # 9:00前开始的任务的结束时间 小于9:00
+            #     判断在时间9-12内的
+
+            am9_12(empId, endTime, stTime)
+
+        elif endTimeGlTask < endTime:
+
+            print(endTime - endTimeGlTask)
+            am9_12(empId, endTime, stTime)
+        else:
+            # 下午时间
+
+            pass
+
+        # .aggregate(startTime=Max("startTime"))
+
+
+def whoSelect(guestStartTime):
+    weekDay = guestStartTime.weekday()
+    print("weekDay", weekDay)
+    if weekDay <= 4:
+        sWorkTime = "workTime14"
+    elif weekDay == 5:
+        #     todo
+        sWorkTime = "workTime5"
+    else:
+        sWorkTime = "workTime67"
+    return sWorkTime
+
+
+def am9_12(empId, endTime, stTime, upDown):
+    '''
+
+    :param empId:
+    :param endTime:
+    :param stTime:
+    :param upDown:am pm
+    :return:
+    '''
+
+    mid = Task.objects.filter(selectEmp=empId, startTime__lt=endTime, startTime__gt=stTime).aggregate(Max('endTime'))
+    print("mid:", mid)
+    judgeTime = (endTime - mid['endTime__max']).seconds
+
+
+    if judgeTime < 30 * 60:
+        #     下午 加一工作日
+        if upDown == "pm":
+            # 获取假日天数
+
+            num = workDay(getDayStr(endTime))
+            endTime = endTime + datetime.timedelta(days=num).strftime("%Y-%m-%d %H:%M:%S")
+            stTime = stTime + datetime.timedelta(days=num).strftime("%Y-%m-%d %H:%M:%S")
+            return am9_12(empId, endTime, stTime, "am")
+        else:
+            #         "am"
+            wT=whoSelect(endTime) # todo 处理workTime14
+            day = getDayStr(strToDateTime(endTime))
+
+            endTime = day + " " + dic[wT]["pm"]["endTime"]
+            stTime = day + " " + dic[wT]["pm"]["starTime"]
+            return am9_12(empId, endTime, stTime, "pm")
+
+
+    else:
+        # 返回 开始时间
+        return mid['endTime__max'] + datetime.timedelta(seconds=1).strftime("%Y-%m-%d %H:%M:%S")
+
 
 
 def taskVerify(request):
@@ -180,9 +319,11 @@ def taskFinshiSubmit(request):
     Task.objects.filter(id=pk).update(state=2)
 
     return HttpResponse("更新数据成功")
+
+
 def checkEmpDayWorkPlan():
     # 员工id
-    empId=""
+    empId = ""
     # 时间
 
 
@@ -223,7 +364,6 @@ def create_Task(request):
         return HttpResponse(json.dumps(result, ensure_ascii=False))
     # todo 查询员工当天 是否有工作安排已满
 
-
     if (nowOrNot is None):
         #      没选中“马上开始" 10分钟后开始,todo 获取任务排班表后得出结论 未对时间做严禁判断
 
@@ -242,7 +382,7 @@ def create_Task(request):
         # 选“马上开始"
         startTime = timezone.now().strftime("%Y-%m-%d %H:%M:%S")
     print("create_Task: ", locals())
-    endTime=startTime+datetime.timedelta(minutes=int(taskTime)*60)
+    endTime = startTime + datetime.timedelta(minutes=int(taskTime) * 60)
     # 部门前端判断
     if (judgeTaskselect(request, selectDep)):
         result = {"erro": "异常:部门未选择"}
@@ -303,4 +443,3 @@ def create_Task(request):
     # print(locals())
     # if()
     return HttpResponse(json.dumps(rert, ensure_ascii=False))
-

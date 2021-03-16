@@ -28,7 +28,7 @@ dic = {"workTime14": {"am": {"starTime": "09:00:00", "endTime": "12:00:00"},
 # 开始时间判断
 # 1.判断周几
 dtime = datetime.datetime(2001, 3, 13, 13, 23, 37)
-print(dtime.hour)
+# print(dtime.hour)
 
 
 # print(dtime.weekday())
@@ -259,25 +259,5 @@ def is_leap_year(year):
     return False
 
 
-def getNextDay(date):
-    # "".split()
-    dates = date.split("-")
-    Year = dates[0]
-    Mouth = dates[1]
-    Day = dates[2]
-    if is_leap_year(int(Year)):
-        #     润年
-
-        pass
-    else:
-        #     平年
-
-        pass
-
-    return
 
 
-print(startTimeJudge(dtime))
-print(dtime.month)
-print(get_day_of_year(dtime.year, dtime.month, dtime.day))
-print(workDay("2020-1-31"))

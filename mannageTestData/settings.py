@@ -50,7 +50,8 @@ INSTALLED_APPS = [
     'employee',
     'business',
     'User',
-    'L1_TaskDo'
+    'L1_TaskDo',
+
 
 
 
