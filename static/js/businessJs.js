@@ -95,8 +95,8 @@ $(document).ready(function () {
             alert("时间不能为空")
             Tasks = {}
             return
-        } else if (workTime < 0) {
-            alert("时间不能小于0")
+        } else if (workTime < 0 || workTime>8) {
+            alert("时间不能小于0,时间不能大于8")
             Tasks = {}
 
             return

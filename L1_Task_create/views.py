@@ -12,15 +12,14 @@ from django.views.decorators.csrf import csrf_exempt
 
 import L1_Task_create
 from L1_Task_create.models import Task
+from L1_Task_create.testTime import workDay, dic
 from company import views as companyView
 from login import views
 # from test.testTime import planTime
 # from test.testTime import workDay
 # from test import testTime.workDay
 from tools import tool_time
-from tools.tool_time import getDayStr, strToDateTime
-
-from L1_Task_create.testTime import workDay,dic
+from tools.tool_time import getDayStr, strToDateTime, getTimeStamp, getDBtime
 
 '''
 任务状态    ---- 1:待分解（级别为1、2级 默认状态）----
@@ -151,22 +150,7 @@ def taskVerifyResult(requset):
         rert = {"result": "success", "content": "更新成功"}
         return HttpResponse(json.dumps(rert, ensure_ascii=False))
     elif (selec == "4"):
-        #
-        # todo 测试
-        startTimeWO = "2021-01-12 18:00:00"
-        nextDay(strToDateTime(startTimeWO), empId)
-        # startTimeWO = "2021-01-12 18:00:00"
-        # day = getDayStr(strToDateTime(startTimeWO))
-        # print("day:", day)
-        # # st_amStart = day + " " + dic["workTime14"]["am"]["starTime"]
-        # # st_amEnd = day + " " + dic["workTime14"]["am"]["endTime"]
-        # st_amStart = day + " " + dic["workTime14"]["pm"]["starTime"]
-        # st_amEnd = day + " " + dic["workTime14"]["pm"]["endTime"]
-        # print("st_amStart:", st_amStart)
-        # print("st_amEnd:", st_amEnd)
-        # stTime = strToDateTime(st_amStart)
-        # endTime = strToDateTime(st_amEnd)
-        # am9_12(empId, endTime, stTime, "pm")
+        # 废弃任务
 
         pass
     elif (selec == "5"):
@@ -181,9 +165,9 @@ def taskVerifyResult(requset):
 '''选择日期创建任务'''
 
 
-def nextDay(guestStartTime, empId):
+def getTaksStartTime(guestStartTime, empId):
     '''
-    :param guestStartTime:任务设置开始日期
+    :param guestStartTime:任务设置开始日期  头一天 上午
     :return: 任务开始时间
     '''
     day = getDayStr(guestStartTime)
@@ -196,7 +180,6 @@ def nextDay(guestStartTime, empId):
 
     sWorkTime = whoSelect(guestStartTime)
 
-
     # 判断 judgeStata=1,
     st_amStart = day + " " + dic[sWorkTime]["am"]["starTime"]
     st_amEnd = day + " " + dic[sWorkTime]["am"]["endTime"]
@@ -205,40 +188,47 @@ def nextDay(guestStartTime, empId):
     endTime = strToDateTime(st_amEnd)
 
     print("stTime:", stTime)
-    startTime = Task.objects.filter(selectEmp=empId, startTime__lt=stTime).aggregate(Max('startTime'))
+    # 任务开始时间 小于等于 工作开始时间最大的
+    startTime_0 = Task.objects.filter(selectEmp=empId, startTime__lte=stTime).aggregate(Max('startTime'))
     # Task.objects.filter()
-    if startTime["startTime__max"] is None:
+    if startTime_0["startTime__max"] is None:
         # 没有 比安排时间更短的时间
         # 判断在时间内的
 
         print("endTime:", endTime)
-        return am9_12(empId, endTime, stTime)
+        return getWorkStartTime(empId, endTime, stTime, "am", 2)
 
     else:
-        # 获取最大值得关闭时间
-        endTimeGlTask = Task.objects.filter(startTime=startTime["startTime__max"], selectEmp=empId)[0].endTime
-        print("获取最大值得关闭时间endTime:", endTimeGlTask, type(endTimeGlTask))
-        if endTimeGlTask <= stTime:
+        # 获取最大值de关闭时间 -- 获取开始时间为 最大开始时间的 的最大结束时间
+        endTimeGlTask_ = Task.objects.filter(startTime=startTime_0["startTime__max"], selectEmp=empId).aggregate(
+            Max('endTime'))
+        endTimeGlTask_0 = endTimeGlTask_['endTime__max']
+        print("获取最大值de关闭时间endTime:", endTimeGlTask_0, type(endTimeGlTask_0))
+
+        if endTimeGlTask_0 <= stTime:
             # 9:00前开始的任务的结束时间 小于9:00
             #     判断在时间9-12内的
-
-            am9_12(empId, endTime, stTime)
-
-        elif endTimeGlTask < endTime:
-
-            print(endTime - endTimeGlTask)
-            am9_12(empId, endTime, stTime)
+            return getWorkStartTime(empId, endTime, stTime, "am", 1)
+        elif endTimeGlTask_0 < endTime:
+            # 9:00前开始的任务的结束时间 大于9:00- 12:00
+            return getWorkStartTime(empId, endTime, stTime, "am", 2, endTimeTask=endTimeGlTask_0)
+        elif endTimeGlTask_0 < strToDateTime(day + " " + dic[sWorkTime]["pm"]["endTime"]):
+            return getWorkStartTime(empId, endTime, stTime, "pm", 3, endTimeTask=endTimeGlTask_0)
         else:
-            # 下午时间
+            #            第二工作日
+            num = workDay(getDayStr(endTime))
+            endTime = endTime + datetime.timedelta(days=num).strftime("%Y-%m-%d %H:%M:%S")
+            return getTaksStartTime(endTime, empId)
 
-            pass
 
-        # .aggregate(startTime=Max("startTime"))
+def whoSelect(guestStartTime: datetime):
+    '''
 
-
-def whoSelect(guestStartTime):
+    :param guestStartTime:
+    :return: 周几
+    '''
     weekDay = guestStartTime.weekday()
-    print("weekDay", weekDay)
+    # print("weekDay", weekDay)
     if weekDay <= 4:
         sWorkTime = "workTime14"
     elif weekDay == 5:
@@ -249,44 +239,105 @@ def whoSelect(guestStartTime):
     return sWorkTime
 
 
-def am9_12(empId, endTime, stTime, upDown):
+def getWorkStartTime(empId, endTime, stTime, upDown, stata, endTimeTask=None):
     '''
-
-    :param empId:
-    :param endTime:
-    :param stTime:
+    查询是否有任务
+    :param empId: 员工id
+    :param endTime: 工作结束时间
+    :param stTime: 工作开始时间
     :param upDown:am pm
+    :param stata: 1 最大结束时间小于 工作开始时间，
     :return:
     '''
 
-    mid = Task.objects.filter(selectEmp=empId, startTime__lt=endTime, startTime__gt=stTime).aggregate(Max('endTime'))
-    print("mid:", mid)
+    # gt 大于 在工作时间范围内任务结束时间最大的
+    if stata == 1 or stata == 2:
+        mid_1 = Task.objects.filter(selectEmp=empId, startTime__lt=endTime, startTime__gt=stTime).aggregate(
+            Max('endTime'))
+        print("mid:", mid_1)
+
+        if stata == 1:
+            if mid_1['endTime__max'] is None:
+                #     在工作时间内未发现任务
+                print(type(stTime))
+                print(stTime)
+                print(type(datetime.timedelta(seconds=1)))
+                print(stTime + datetime.timedelta(seconds=1))
+                print("type::::",(stTime + datetime.timedelta(seconds=1)).strftime("%Y-%m-%d %H:%M:%S"))
+                print("type::::",type((stTime + datetime.timedelta(seconds=1)).strftime("%Y-%m-%d %H:%M:%S")))
+                return stTime + datetime.timedelta(seconds=1)
+            else:
+                #     在工作时间内发现任务开始时间,mid 为结束时间的最大值 todo 时间安排都是连续的，不处理 ：开始时间最小值未做处理 taskTime_min_start - stTime>1
+
+                return okTime(empId, endTime, mid_1, stTime, upDown)
+        elif stata == 2:
+            if mid_1['endTime__max'] is None:
+                #     在工作时间内未发现任务
+                return endTimeTask + datetime.timedelta(seconds=1)
+            else:
+                # 工作时间内发现任务
+
+                return okTime(empId, endTime, mid_1, stTime, upDown)
+    else:
+        sWorkTime = whoSelect(endTime)
+        day = getDayStr(endTime)
+        # 判断 judgeStata=1,
+        st_amStart = day + " " + dic[sWorkTime]["am"]["starTime"]
+        st_amEnd = day + " " + dic[sWorkTime]["am"]["endTime"]
+        # 转化为 时间
+        stTime = strToDateTime(st_amStart)
+        endTime = strToDateTime(st_amEnd)
+
+        mid_1 = Task.objects.filter(selectEmp=empId, startTime__lt=endTime, startTime__gt=stTime).aggregate(
+            Max('endTime'))
+        print("mid:", mid_1)
+        if stata == 3:
+            # 0级任务 在下午时间内
+            # 获取下午时间，
+            if mid_1['endTime__max'] is None:
+                #     在工作时间内未发现任务
+                return endTimeTask + datetime.timedelta(seconds=1)
+            else:
+                # 工作时间内发现任务
+
+                return okTime(empId, endTime, mid_1, stTime, upDown)
+
+
+def okTime(empId, endTime, mid, stTime, upDown):
+    '''
+    获取开始时间
+    :param empId:
+    :param endTime:
+    :param mid: 在工作时间内发现任务开始时间,mid 为结束时间的最大值
+    :param stTime:
+    :param upDown:
+    :return:
+    '''
+    # 结束时间= 在工作时间内发现任务开始时间,mid 为结束时间的最大值
     judgeTime = (endTime - mid['endTime__max']).seconds
-
-
     if judgeTime < 30 * 60:
-        #     下午 加一工作日
+        # 不在工作时间内
+        # getWorkStartTime(empId, endTime, stTime, "am", 2, endTimeTask=endTimeGlTask_0)
         if upDown == "pm":
             # 获取假日天数
-
+            # 加一工作日
             num = workDay(getDayStr(endTime))
-            endTime = endTime + datetime.timedelta(days=num).strftime("%Y-%m-%d %H:%M:%S")
-            stTime = stTime + datetime.timedelta(days=num).strftime("%Y-%m-%d %H:%M:%S")
-            return am9_12(empId, endTime, stTime, "am")
+            endTime = endTime + datetime.timedelta(days=num)
+            return getTaksStartTime(endTime, empId)
         else:
             #         "am"
-            wT=whoSelect(endTime) # todo 处理workTime14
+            #     下午
+            wT = whoSelect(endTime)
             day = getDayStr(strToDateTime(endTime))
-
             endTime = day + " " + dic[wT]["pm"]["endTime"]
             stTime = day + " " + dic[wT]["pm"]["starTime"]
-            return am9_12(empId, endTime, stTime, "pm")
-
+            # 判断 结束时间是否在范围内
+            # "13:30-18:00"
+            return okTime(empId, endTime, mid, stTime, "pm")
 
     else:
-        # 返回 开始时间
-        return mid['endTime__max'] + datetime.timedelta(seconds=1).strftime("%Y-%m-%d %H:%M:%S")
-
+        # 返回 开始时间=当天最大值+1s 在工作时间内
+        return mid['endTime__max'] + datetime.timedelta(seconds=1)
 
 
 def taskVerify(request):
@@ -322,9 +373,128 @@ def taskFinshiSubmit(request):
 
 
 def checkEmpDayWorkPlan():
+    pass
     # 员工id
     empId = ""
     # 时间
+
+
+def getTaskEndTime(startTime, endTime):
+    '''
+    获取任务结束时间
+    :return:
+    '''
+    sWorkTime = whoSelect(startTime)
+    day = getDayStr(startTime)
+    # 判断 judgeStata=1,
+    st_amStart = day + " " + dic[sWorkTime]["am"]["starTime"]
+    st_amEnd = day + " " + dic[sWorkTime]["am"]["endTime"]
+    st_pmStart = day + " " + dic[sWorkTime]["pm"]["starTime"]
+    st_pmEnd = day + " " + dic[sWorkTime]["pm"]["endTime"]
+    # 转化为 时间
+    stTime_am = strToDateTime(st_amStart)
+    endTime_am = strToDateTime(st_amEnd)
+    stTime_pm = strToDateTime(st_pmStart)
+    endTime_pm = strToDateTime(st_pmEnd)
+    # 时间戳
+
+    # 上午
+    Stamp_stTime_am = getTimeStamp(stTime_am)
+    Stamp_endTime_am = getTimeStamp(endTime_am)
+
+    # 下午
+    Stamp_stTime_pm = getTimeStamp(stTime_pm)
+    Stamp_endTime_pm = getTimeStamp(endTime_pm)
+
+    Stamp_startTime = getTimeStamp(startTime)
+    Stamp_endTime = getTimeStamp(endTime)
+
+    if startTime < endTime_am:
+        # 任务在-上午
+        if endTime_am >= endTime:
+            # 上午时间
+            return endTime
+        elif endTime > endTime_am and endTime <= stTime_pm:
+            # 中午时间
+            s = Stamp_stTime_pm + (Stamp_endTime - Stamp_endTime_am )
+            return getDBtime(s)
+        elif endTime > stTime_pm :
+            # todo 超过工作结束时间未处理
+            # s = Stamp_stTime_pm + (Stamp_endTime - (Stamp_endTime_am - Stamp_startTime))
+            s=Stamp_endTime+(Stamp_stTime_pm-Stamp_endTime_am)
+            s_datetime= getDBtime(s)
+            if s_datetime>endTime_pm :
+                # 获取下一个工作日 一个任务最多8小时,超出8小时的继续分级
+                s = (Stamp_endTime-Stamp_endTime) + (Stamp_stTime_pm - Stamp_endTime_am)
+
+                num = workDay(getDayStr(endTime))
+                day2 = endTime + datetime.timedelta(days=num)
+                #
+                sWorkTime = whoSelect(day2)
+                day = getDayStr(day2)
+                # 判断 judgeStata=1,
+                st_amStart = day + " " + dic[sWorkTime]["am"]["starTime"]
+
+                # # 转化为 时间
+                stTime_am = strToDateTime(st_amStart)
+                # # 时间戳
+                # # 上午
+                Stamp_stTime_am = getTimeStamp(stTime_am)
+                return getDBtime(Stamp_stTime_am+s)
+            else:
+                return s_datetime
+        else:
+            raise("结束时间判断异常")
+    else:
+        print("getTaskEndTime")
+        # 任务在-下午
+        if endTime_pm >= endTime:
+            return endTime
+        else:
+            # 剩余时长
+            TimeUp=Stamp_endTime-(Stamp_endTime_pm-Stamp_startTime)
+
+            num = workDay(getDayStr(endTime))
+            day2 = endTime + datetime.timedelta(days=num)
+            #
+            sWorkTime = whoSelect(day2)
+            day = getDayStr(day2)
+
+            # 判断 judgeStata=1,
+            st_amStart = day + " " + dic[sWorkTime]["am"]["starTime"]
+            st_amEnd = day + " " + dic[sWorkTime]["am"]["endTime"]
+            st_pmStart = day + " " + dic[sWorkTime]["pm"]["starTime"]
+            st_pmEnd = day + " " + dic[sWorkTime]["pm"]["endTime"]
+            # 转化为 时间
+            stTime_am = strToDateTime(st_amStart)
+            endTime_am = strToDateTime(st_amEnd)
+            stTime_pm = strToDateTime(st_pmStart)
+            endTime_pm = strToDateTime(st_pmEnd)
+            # 时间戳
+
+            # 上午
+            Stamp_stTime_am = getTimeStamp(stTime_am)
+            Stamp_endTime_am = getTimeStamp(endTime_am)
+
+            # 下午
+            Stamp_stTime_pm = getTimeStamp(stTime_pm)
+            Stamp_endTime_pm = getTimeStamp(endTime_pm)
+
+            Stamp_startTime = getTimeStamp(startTime)
+            Stamp_endTime = getTimeStamp(endTime)
+
+            endNewTime=getDBtime(Stamp_stTime_am+TimeUp)
+            if endNewTime <= endTime_am:
+                return endNewTime
+            elif endNewTime>endTime_am:
+                # 上午时间 + 中午时间
+                TimeUp2=TimeUp-(Stamp_endTime_am-Stamp_stTime_am)
+                StampendTime=Stamp_stTime_pm+TimeUp2
+                if StampendTime>Stamp_endTime:
+                    return getDBtime(Stamp_endTime)
+                return getDBtime(StampendTime)
+
+
 
 
 @csrf_exempt
@@ -381,8 +551,11 @@ def create_Task(request):
     else:
         # 选“马上开始"
         startTime = timezone.now().strftime("%Y-%m-%d %H:%M:%S")
-    print("create_Task: ", locals())
-    endTime = startTime + datetime.timedelta(minutes=int(taskTime) * 60)
+
+    # print("create_Task: ", locals())
+    # todo 结束时间 判断处理
+
+
     # 部门前端判断
     if (judgeTaskselect(request, selectDep)):
         result = {"erro": "异常:部门未选择"}
@@ -409,6 +582,16 @@ def create_Task(request):
     if (not checkEmp):
         mgs = {"message": "员工不存在"}
         return HttpResponse(json.dumps(mgs, ensure_ascii=False))
+
+    startTime = getTaksStartTime(startTime, selectEmp)
+
+
+    endTime = startTime + datetime.timedelta(hours=int(taskTime))
+    print("startTime1",startTime," endTime :",endTime)
+
+
+
+    endTime = getTaskEndTime(startTime, endTime)
     projectId = views.getVuale("project", "name", projectName)
     print("projectId: ", projectId)
 
@@ -433,7 +616,9 @@ def create_Task(request):
     #                     startTime=startTime,taskTime=taskTime,strategy=strategy,taskLevel=taskLevel,
     #                     selectDep=selectDep,selectPost=selectPost,selectEmp=str(selectEmp))
 
-    rert = companyView.createData(task, "Task", objs)
+    # todo test rert = companyView.createData(task, "Task", objs)
+    print("task:",task)
+    rert="1"# test
     print("rert", type(rert) is L1_Task_create.models.Task)
     if (type(rert) is L1_Task_create.models.Task):
         rert = {"success": "添加成功"}
