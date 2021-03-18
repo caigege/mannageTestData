@@ -13,7 +13,6 @@ from django.views.decorators.csrf import csrf_exempt
 import L1_Task_create
 from L1_Task_create.models import Task
 from L1_Task_create.testTime import workDay, dic
-from company import views as companyView
 from login import views
 # from test.testTime import planTime
 # from test.testTime import workDay
@@ -263,8 +262,8 @@ def getWorkStartTime(empId, endTime, stTime, upDown, stata, endTimeTask=None):
                 print(stTime)
                 print(type(datetime.timedelta(seconds=1)))
                 print(stTime + datetime.timedelta(seconds=1))
-                print("type::::",(stTime + datetime.timedelta(seconds=1)).strftime("%Y-%m-%d %H:%M:%S"))
-                print("type::::",type((stTime + datetime.timedelta(seconds=1)).strftime("%Y-%m-%d %H:%M:%S")))
+                print("type::::", (stTime + datetime.timedelta(seconds=1)).strftime("%Y-%m-%d %H:%M:%S"))
+                print("type::::", type((stTime + datetime.timedelta(seconds=1)).strftime("%Y-%m-%d %H:%M:%S")))
                 return stTime + datetime.timedelta(seconds=1)
             else:
                 #     在工作时间内发现任务开始时间,mid 为结束时间的最大值 todo 时间安排都是连续的，不处理 ：开始时间最小值未做处理 taskTime_min_start - stTime>1
@@ -416,16 +415,18 @@ def getTaskEndTime(startTime, endTime):
             return endTime
         elif endTime > endTime_am and endTime <= stTime_pm:
             # 中午时间
-            s = Stamp_stTime_pm + (Stamp_endTime - Stamp_endTime_am )
+            s = Stamp_stTime_pm + (Stamp_endTime - Stamp_endTime_am)
             return getDBtime(s)
-        elif endTime > stTime_pm :
+        elif endTime > stTime_pm:
             # todo 超过工作结束时间未处理
             # s = Stamp_stTime_pm + (Stamp_endTime - (Stamp_endTime_am - Stamp_startTime))
-            s=Stamp_endTime+(Stamp_stTime_pm-Stamp_endTime_am)
-            s_datetime= getDBtime(s)
-            if s_datetime>endTime_pm :
+            s = Stamp_endTime + (Stamp_stTime_pm - Stamp_endTime_am)
+            s_datetime = getDBtime(s)
+            print("s_datetime :", type(s_datetime),"endTime_pm",endTime_pm)
+            if s_datetime > endTime_pm:
+                print("s_datetime > endTime_pm:",s_datetime)
                 # 获取下一个工作日 一个任务最多8小时,超出8小时的继续分级
-                s = (Stamp_endTime-Stamp_endTime) + (Stamp_stTime_pm - Stamp_endTime_am)
+                s = (Stamp_endTime - Stamp_endTime) + (Stamp_stTime_pm - Stamp_endTime_am)
 
                 num = workDay(getDayStr(endTime))
                 day2 = endTime + datetime.timedelta(days=num)
@@ -437,14 +438,15 @@ def getTaskEndTime(startTime, endTime):
 
                 # # 转化为 时间
                 stTime_am = strToDateTime(st_amStart)
-                # # 时间戳
-                # # 上午
+                # 时间戳
+                # 上午
                 Stamp_stTime_am = getTimeStamp(stTime_am)
-                return getDBtime(Stamp_stTime_am+s)
+                return getDBtime(Stamp_stTime_am + s)
             else:
+                print("s_datetime > endTime_pm else:", s_datetime)
                 return s_datetime
         else:
-            raise("结束时间判断异常")
+            raise ("结束时间判断异常")
     else:
         print("getTaskEndTime")
         # 任务在-下午
@@ -452,7 +454,7 @@ def getTaskEndTime(startTime, endTime):
             return endTime
         else:
             # 剩余时长
-            TimeUp=Stamp_endTime-(Stamp_endTime_pm-Stamp_startTime)
+            TimeUp = Stamp_endTime - (Stamp_endTime_pm - Stamp_startTime)
 
             num = workDay(getDayStr(endTime))
             day2 = endTime + datetime.timedelta(days=num)
@@ -483,18 +485,18 @@ def getTaskEndTime(startTime, endTime):
             Stamp_startTime = getTimeStamp(startTime)
             Stamp_endTime = getTimeStamp(endTime)
 
-            endNewTime=getDBtime(Stamp_stTime_am+TimeUp)
+            endNewTime = getDBtime(Stamp_stTime_am + TimeUp)
             if endNewTime <= endTime_am:
+                print("endNewTime <= endTime_am:", endNewTime)
                 return endNewTime
-            elif endNewTime>endTime_am:
+            elif endNewTime > endTime_am:
+                print("endNewTime > endTime_am:", endNewTime)
                 # 上午时间 + 中午时间
-                TimeUp2=TimeUp-(Stamp_endTime_am-Stamp_stTime_am)
-                StampendTime=Stamp_stTime_pm+TimeUp2
-                if StampendTime>Stamp_endTime:
+                TimeUp2 = TimeUp - (Stamp_endTime_am - Stamp_stTime_am)
+                StampendTime = Stamp_stTime_pm + TimeUp2
+                if StampendTime > Stamp_endTime:
                     return getDBtime(Stamp_endTime)
                 return getDBtime(StampendTime)
-
-
 
 
 @csrf_exempt
@@ -555,7 +557,6 @@ def create_Task(request):
     # print("create_Task: ", locals())
     # todo 结束时间 判断处理
 
-
     # 部门前端判断
     if (judgeTaskselect(request, selectDep)):
         result = {"erro": "异常:部门未选择"}
@@ -585,11 +586,8 @@ def create_Task(request):
 
     startTime = getTaksStartTime(startTime, selectEmp)
 
-
     endTime = startTime + datetime.timedelta(hours=int(taskTime))
-    print("startTime1",startTime," endTime :",endTime)
-
-
+    print("startTime1", startTime, " endTime :", endTime)
 
     endTime = getTaskEndTime(startTime, endTime)
     projectId = views.getVuale("project", "name", projectName)
@@ -617,8 +615,8 @@ def create_Task(request):
     #                     selectDep=selectDep,selectPost=selectPost,selectEmp=str(selectEmp))
 
     # todo test rert = companyView.createData(task, "Task", objs)
-    print("task:",task)
-    rert="1"# test
+    print("task:", task)
+    rert = "1"  # test
     print("rert", type(rert) is L1_Task_create.models.Task)
     if (type(rert) is L1_Task_create.models.Task):
         rert = {"success": "添加成功"}
