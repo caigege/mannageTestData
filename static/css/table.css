@@ -74,6 +74,21 @@ td, th {
     right: 300px;
 }
 
+#postChange_user {
+    position: relative;
+    top: -300px;
+    color: cadetblue;
+    width: 850px;
+    height: 580px;
+    padding: 10px;
+    border: 1px solid gray;
+    margin: 10px;
+    bottom: 150px;
+    left: 300px;
+    background-color: bisque;
+    right: 300px;
+}
+
 button.taskSure {
     /*background-color: #cec05869;*/
     /*box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);*/

@@ -13,7 +13,6 @@ from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 
-from business import Test_Data
 from business.models import project
 from company.models import Company, department, post
 from employee.models import emp
@@ -24,17 +23,17 @@ from login.views import auth
 
 def getProject(request):
     company = companyGet(request)
-    obj = {"companyId": company,"project":project}
+    obj = {"companyId": company, "project": project}
     res = views.getVualeAllObj("project", "companyId", "companyId", obj)
     # res
     print("this is getProject")
     # result=Test_Data.resultoK
     # lists = Test_Data.resultoKstr
-    s=serializers.serialize("python",res)
+    s = serializers.serialize("python", res)
     resultl = getArray(s, "fields")
-    result=json.dumps(resultl)
+    result = json.dumps(resultl)
     # print("getProject result：",result)
-    return JsonResponse(result,safe=False,json_dumps_params={'ensure_ascii':False})
+    return JsonResponse(result, safe=False, json_dumps_params={'ensure_ascii': False})
     # return JsonResponse(result, safe=False)
 
 
@@ -128,9 +127,9 @@ def checkFormat(lists: list or dict):
     :param lists:
     :return:
     '''
-    if(isinstance(lists,list) ):
+    if (isinstance(lists, list)):
         for liss in lists:
-            print("liss*******:",type(liss),liss)
+            print("liss*******:", type(liss), liss)
             for lissK in liss.keys():
                 value = liss.get(lissK)
                 # print("checkFormat: ",type(value))
@@ -139,12 +138,12 @@ def checkFormat(lists: list or dict):
 
                 elif isinstance(value, datetime):
                     liss[lissK] = value.strftime("%Y-%m-%d %H:%M:%S")
-                elif isinstance(value,list):
-                    liss[lissK]=checkFormat(value)
-                elif isinstance(value,dict):
-                    liss[lissK]=checkFormat(value)
+                elif isinstance(value, list):
+                    liss[lissK] = checkFormat(value)
+                elif isinstance(value, dict):
+                    liss[lissK] = checkFormat(value)
 
-    elif(isinstance(lists,dict)):
+    elif (isinstance(lists, dict)):
         for listsK in lists.keys():
             value = lists.get(listsK)
             # print("checkFormat: ",type(value))
@@ -221,11 +220,11 @@ def getDep(request):
     # print("departmentObj getDep",departmentObj)
     # result.id
     # ret = serializers.serialize("python", result)
-    resultOK = json.dumps(resultList,ensure_ascii=False)
+    resultOK = json.dumps(resultList, ensure_ascii=False)
     # # print("getDep resutl： ", type(result))
     # print("getDep resultOK： ", result)
 
-    return HttpResponse(resultOK,)
+    return HttpResponse(resultOK, )
 
 
 def departmentsGetResultAll(request):
@@ -345,6 +344,52 @@ def addDep(request):
 
 
 @auth
+def addEmpCheck(request, dep):
+    '''
+    查询是否满足条件:2星级 部门是否有人：有则返回级别不够，没人就提示，离职或是升级
+    :param request:
+    :param dep:
+    :return:
+    '''
+    accout = request.session.get("user")
+    company = views.getVuale("Company", "account", accout)
+    companylv=company.companyLv
+    # 部门
+    dept = (str(dep).split("&"))[0]
+    # 公司级别
+    companyLv = (str(dep).split("&"))[1]
+    # 获取部门id
+    department1 = views.getAllVuale("department", "name", "\'"+company.name + "-" + dept +"\'")
+
+    depa=serializers.serialize("python", department1);
+    print("companylv:",companylv,type(companylv))
+    print("depa:",depa)
+    print("depa:",depa[0]["pk"])
+    #
+    s=emp.objects.filter(department=depa[0]["pk"])
+
+    if len(s) == 0:
+        mgs = {"message":  "ok"}
+        # return
+    else:
+        if companylv == 2:
+
+            # mgs = {"message": "当前公司等级为:"+companyLv+"星级,请升级到3星级"}
+            mgs = {"message": "当前公司等级为:" + companyLv + "星级,请升级到" + str(int(companyLv) + 1) + "星级"}
+        elif companylv == 1:
+            emps=emp.objects.filter()
+            empss = serializers.serialize("python", emps);
+            if len(empss) > 1:
+                mgs = {"message": "当前公司等级为:" + companyLv + "星级,请升级到" + str(int(companyLv) + 1) + "星级"}
+            else:
+                mgs = {"message": "ok"}
+        else:
+            mgs = {"message": "ok"}
+    return JsonResponse(mgs, charset='utf-8')
+    # depJ = views.check("department", "name", company.name + "-" + dept)
+
+
+@auth
 def addEmp(request, id):
     '''
     添加员工
@@ -366,7 +411,7 @@ def addEmp(request, id):
     empId = idsStrs[0]
     dep = idsStrs[1]
     # 判断部门是否存在
-    department
+    # department
     depJ = views.check("department", "name", company.name + "-" + dep)
     # print("depJ :", depJ)
     if (not depJ):
@@ -382,12 +427,12 @@ def addEmp(request, id):
     if (users.name == "" or users.name is None):
         employee['name'] = str(users.phone)
     else:
-        employee['name'] = "\'" + users.name+"\'"
+        employee['name'] = "\'" + users.name + "\'"
 
     if (users.education == "" or users.education is None):
         employee['education'] = "\'大专\'"
     else:
-        employee['education'] = "\'" + users.education+"\'"
+        employee['education'] = "\'" + users.education + "\'"
 
     employee['phone'] = users.phone
     employee['companyId'] = 'company'
@@ -433,13 +478,13 @@ def createData(data: dict, table, objs: dict = None):
             try:
                 return eval(dataStr, objs)
             except IntegrityError:
-                return {"mgs":"已存在"}
+                return {"mgs": "已存在"}
 
         else:
             return eval(dataStr)
 
     except ObjectDoesNotExist:
-        return {"mgs":"异常"}
+        return {"mgs": "异常"}
     # print(dataStr)
 
 
@@ -474,7 +519,6 @@ def companyC(request):
     for tl in types_list:
         types_list[j]['name'] = tl['name'].split("-")[1]
         j += 1
-        
 
     return render(request, "model/company_Center.html", locals())
 

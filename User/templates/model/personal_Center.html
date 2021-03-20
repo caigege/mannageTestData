@@ -36,7 +36,7 @@
         <tbody>
         {% for li in list %}
 
-            <tr data-data="{{ li.pk }} * {{ li.fields.taskCreater }}">
+            <tr data-data="{{ li.pk }} * {{ li.fields.taskCreater }} * {{ li.fields.projectId }}">
                 <td>{{ forloop.counter }}</td>
 
                 <td>{{ li.fields.taskName }}</td>
@@ -83,10 +83,10 @@
 
                         <button name="submitTaskCheck">执行完成</button>
                         {% if li.fields.strategy == 1 or li.fields.strategy == 2 %}
-                            <button>调整执行顺序</button>
+                            <button class="orderBtn">调整执行顺序</button>
                         {% endif %}
                         {% if li.fields.taskLevel == 1 %}
-                            <button class="taskGoResolvej">继续分解任务</button>
+                            <button class="taskGoResolvej" name="taskGoResolvej">继续分解任务</button>
                         {% endif %}
                     {% elif li.fields.state == 2 %}
                         <span style="color:yellow;background-color: rgba(79,102,206,0.87)">执行完成 ,验收中</span>
@@ -117,6 +117,63 @@
 {#    <i>1</i>#}
 {#    {% endfor %}#}
 {#</div>#}
+<div id='postChange_user' style="display: none">
+    <form method="post" action="/task/create/">
+        <strong>项目id:</strong><input readonly="readonly" name='projectName' value="1"><br/>
+        <strong>上级任务id:</strong><input readonly="readonly" name='upTaskId' value="1"><br/>
+        <strong><span style="color:red;">*</span>任务名:</strong><input name="taskName"><br/><br/>
+        <strong><span style="color:red;">*</span>内容:</strong><textarea name="content"></textarea><br/><br/>
+        <strong><span style="color:red;">*</span>工作耗时:</strong><input type="number" name="taskTime"> 小时(最低1小时)<br/><br/>
+
+        <strong><span style="color:red;">*</span>任务策略:</strong>
+        <select name="strategy">
+            {#            <option class="strategyOption" value="-1" selected="true" disabled>-- 请选择 --</option>#}
+            <option class="strategyOption" style="background-color: white;color:black; " value="1" selected="true">普通
+            </option>
+            <option class="strategyOption" style="background-color: orange;color:black; " value="2">执行者自行创建</option>
+            <option class="strategyOption" style="background-color: blue;color:white; " value="3">1级管理安排</option>
+            <option class="strategyOption" style="background-color: darkviolet;color:white; " value="4">管理级安排</option>
+            <option class="strategyOption" style="background-color: red;color:black; " value="5">紧急</option>
+        </select>
+        <br/>
+
+
+        <strong><span style="color:red;">*</span>任务级别:</strong>
+        <select name="taskLevel">
+            {#            <option class="taskLevelOption" value="-1" selected="true" disabled>-- 请选择 --</option>#}
+            <option class="taskLevelOption" value="1" selected="true">再次分解</option>
+            <option class="taskLevelOption" value="2">可执行</option>
+        </select>2级任务可执行,1级任务再次分解
+        <br/>
+
+        <strong><span style="color:red;">*</span>选择部门:</strong>
+        <select name="selectDep">
+        </select>
+        <br/>
+
+        <strong><span style="color:red;">*</span>选择岗位:</strong>
+        <select name="selectPost">
+        </select>
+        <br/>
+
+        <strong><span style="color:red;">*</span>任务指派:</strong>
+        <select name="selectEmp">
+        </select>
+        <br/>
+        <strong><span style="color:grey;">*</span>开始时间:</strong>
+        {#        <input id="start" name="start" type="date" data-format="YYYY-MM-DD HH:mm">#}
+        <input id="start" name="startTime" type="datetime-local">
+        <br/>
+
+        <input type="checkbox" name="nowOrNot">马上开始(不选择将于"开始时间"后10分钟开始,10分钟内确认任务,结束时间为开始时间+工作耗时)
+        勾选后,"开始时间"作为开始，不再考虑确认时间
+        <br/><br/><br/><br/>
+        <input type="submit" name="createTaskSubmit" value="提交">
+        <input type="text">
+    </form>
+{#    <button class="post" id="postSave">保存</button>#}
+    <button class="post" id="postCancel">取消</button>
+</div>
 <div id="messageDiv" style="display: none">
     messageDiv
 </div>

@@ -12,7 +12,7 @@ def getUser(request):
     user = request.session.get("user")
     print("getUser - user：", user)
     # res=getAllVuale("Task","selectEmp","\'"+user+"\'")
-    res = Task.objects.filter(selectEmp=user).order_by("createTime")
+    res = Task.objects.filter(selectEmp=user,state__in=[0,1,2,3,4,5,6]).order_by("createTime")
 
     lv1 = []
     lv2 = []
@@ -31,8 +31,7 @@ def getUser(request):
             lv3.append(ret)
         elif num == 4:
             lv4.append(ret)
-            # print("this problem")
-            # print("lv4",serializers.serialize("python", lv4[0]))
+
 
         elif num == 5:
             lv5.append(ret)
@@ -45,6 +44,7 @@ def getUser(request):
 def sureTask(request):
     data = request.POST.get("data")
     print(data)
+    # 任务id
     pk = data.split("*")[0]
     # taskCreate = data.split("*")[1]
     Task.objects.filter(id=pk).update(state=1)
@@ -58,7 +58,7 @@ def getUserAjax(request):
     user = request.session.get("user")
     print("getUser - user：", user)
     # res=getAllVuale("Task","selectEmp","\'"+user+"\'")
-    res = Task.objects.filter(selectEmp=user).order_by("createTime")
+    res = Task.objects.filter(selectEmp=user,state__in=[0,1,2,3,4,5,6]).order_by("createTime")
     result=serializers.serialize("python", res)
     lv1 = []
     lv2 = []
@@ -85,3 +85,19 @@ def getUserAjax(request):
     resultdata = lv5 + lv4 + lv3 + lv2 + lv1
     print("resultdata ----*****----:",type(resultdata),resultdata)
     return HttpResponse(json.dumps(companyView.checkFormat(resultdata), ensure_ascii=False))
+
+
+def secondTaskResolvej(request):
+    '''
+    继续分解，判断1 2级
+    :param request:
+    :return:
+    '''
+    data = request.POST.get("data")
+    print(data)
+    # 任务id
+    pk = data.split("*")[0]
+    # taskCreate = data.split("*")[1]
+    # Task.objects.filter(id=pk).update(state=1)
+
+    return None

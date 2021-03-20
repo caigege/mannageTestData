@@ -2,11 +2,24 @@ import datetime
 import time
 
 dtimeTest = datetime.datetime(2021, 3, 12, 10, 23, 37)
+
+
+def getTimeStampToDatetime(timeStamp):
+    '''
+    时间戳转 dateTime
+    :param timeStamp:
+    :return: str
+    '''
+    dateArray = datetime.datetime.fromtimestamp(timeStamp)
+    otherStyleTime = dateArray.strftime("%Y-%m-%d %H:%M:%S")
+    # str:
+    return strToDateTime(otherStyleTime)
+
 def getDBtime(timeStamp):
     '''
     时间戳转 dateTime
     :param timeStamp:
-    :return:
+    :return: str
     '''
     dateArray = datetime.datetime.fromtimestamp(timeStamp)
     otherStyleTime = dateArray.strftime("%Y-%m-%d %H:%M:%S")
@@ -48,4 +61,6 @@ def  dateTimeToStr(datetime):
 
     #
     return datetime.strftime("%Y-%m-%d %H:%M:%S")
-# print(getDayStr(dtimeTest))
+
+
+# print(getDBtime(11000))

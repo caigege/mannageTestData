@@ -13,12 +13,13 @@ from django.views.decorators.csrf import csrf_exempt
 import L1_Task_create
 from L1_Task_create.models import Task
 from L1_Task_create.testTime import workDay, dic
+from company import views as companyView
 from login import views
 # from test.testTime import planTime
 # from test.testTime import workDay
 # from test import testTime.workDay
 from tools import tool_time
-from tools.tool_time import getDayStr, strToDateTime, getTimeStamp, getDBtime
+from tools.tool_time import getDayStr, strToDateTime, getTimeStamp, getDBtime, dateTimeToStr, getTimeStampToDatetime
 
 '''
 任务状态    ---- 1:待分解（级别为1、2级 默认状态）----
@@ -29,8 +30,12 @@ from tools.tool_time import getDayStr, strToDateTime, getTimeStamp, getDBtime
             4 顺利完成（未超期）
             5 验收后,超时完成（按工作时间计算）
             6 超时未提交验收 自动提交
-            6 延迟（执行中超时未完成）
+            7:废弃
+            8:回收再发布
+            9:暂停
+            # 6 延迟（执行中超时未完成）
             # 7 时间计划提前执行 （不考虑）
+            
 '''
 
 
@@ -150,13 +155,18 @@ def taskVerifyResult(requset):
         return HttpResponse(json.dumps(rert, ensure_ascii=False))
     elif (selec == "4"):
         # 废弃任务
-
-        pass
+        Task.objects.filter(upTaskId=taskId).update(state=7)
+        Task.objects.filter(id=taskId).update(state=7)
+        rert = {"result": "success", "content": "更新成功"}
+        return HttpResponse(json.dumps(rert, ensure_ascii=False))
     elif (selec == "5"):
-        pass
+        # 回收再发布
+        Task.objects.filter(upTaskId=taskId).update(state=8)
+        Task.objects.filter(id=taskId).update(state=8)
     elif (selec == "6"):
-        pass
-    # todo 20210115
+        # 暂停任务
+        Task.objects.filter(upTaskId=taskId).update(state=9)
+        Task.objects.filter(id=taskId).update(state=9)
 
     return HttpResponse("处理成功")
 
@@ -195,6 +205,7 @@ def getTaksStartTime(guestStartTime, empId):
         # 判断在时间内的
 
         print("endTime:", endTime)
+        #      getTaksStartTime
         return getWorkStartTime(empId, endTime, stTime, "am", 2)
 
     else:
@@ -231,7 +242,7 @@ def whoSelect(guestStartTime: datetime):
     if weekDay <= 4:
         sWorkTime = "workTime14"
     elif weekDay == 5:
-        #     todo
+        #     todo1
         sWorkTime = "workTime5"
     else:
         sWorkTime = "workTime67"
@@ -336,6 +347,11 @@ def okTime(empId, endTime, mid, stTime, upDown):
 
     else:
         # 返回 开始时间=当天最大值+1s 在工作时间内
+        ts=mid['endTime__max'] + datetime.timedelta(seconds=1)
+        tNow=getTimeStampToDatetime(time.time())
+        if ts<=tNow:
+            return tNow  + datetime.timedelta(seconds=5)
+
         return mid['endTime__max'] + datetime.timedelta(seconds=1)
 
 
@@ -412,21 +428,24 @@ def getTaskEndTime(startTime, endTime):
         # 任务在-上午
         if endTime_am >= endTime:
             # 上午时间
-            return endTime
+            return dateTimeToStr(endTime)
         elif endTime > endTime_am and endTime <= stTime_pm:
             # 中午时间
             s = Stamp_stTime_pm + (Stamp_endTime - Stamp_endTime_am)
             return getDBtime(s)
         elif endTime > stTime_pm:
             # todo 超过工作结束时间未处理
-            # s = Stamp_stTime_pm + (Stamp_endTime - (Stamp_endTime_am - Stamp_startTime))
-            s = Stamp_endTime + (Stamp_stTime_pm - Stamp_endTime_am)
-            s_datetime = getDBtime(s)
-            print("s_datetime :", type(s_datetime),"endTime_pm",endTime_pm)
+            # 超过中午后的结束时间戳
+            s_afterNoon = Stamp_endTime + (Stamp_stTime_pm - Stamp_endTime_am)
+            # 超过中午后的结束时间
+            s_datetime = strToDateTime(getDBtime(s_afterNoon))
+            print("s_datetime :", type(s_datetime), "endTime_pm", endTime_pm, s_datetime)
             if s_datetime > endTime_pm:
-                print("s_datetime > endTime_pm:",s_datetime)
+                print("s_datetime > endTime_pm:", s_datetime)
                 # 获取下一个工作日 一个任务最多8小时,超出8小时的继续分级
-                s = (Stamp_endTime - Stamp_endTime) + (Stamp_stTime_pm - Stamp_endTime_am)
+                #  结算出次日时间戳 ()+()
+                # s = (Stamp_endTime - Stamp_endTime) + (Stamp_stTime_pm - Stamp_endTime_am)
+                s = s_afterNoon - Stamp_endTime_pm
 
                 num = workDay(getDayStr(endTime))
                 day2 = endTime + datetime.timedelta(days=num)
@@ -444,14 +463,14 @@ def getTaskEndTime(startTime, endTime):
                 return getDBtime(Stamp_stTime_am + s)
             else:
                 print("s_datetime > endTime_pm else:", s_datetime)
-                return s_datetime
+                return dateTimeToStr(s_datetime)
         else:
             raise ("结束时间判断异常")
     else:
         print("getTaskEndTime")
         # 任务在-下午
         if endTime_pm >= endTime:
-            return endTime
+            return dateTimeToStr(endTime)
         else:
             # 剩余时长
             TimeUp = Stamp_endTime - (Stamp_endTime_pm - Stamp_startTime)
@@ -467,7 +486,7 @@ def getTaskEndTime(startTime, endTime):
             st_amEnd = day + " " + dic[sWorkTime]["am"]["endTime"]
             st_pmStart = day + " " + dic[sWorkTime]["pm"]["starTime"]
             st_pmEnd = day + " " + dic[sWorkTime]["pm"]["endTime"]
-            # 转化为 时间
+            # 转化为 时间 datetime
             stTime_am = strToDateTime(st_amStart)
             endTime_am = strToDateTime(st_amEnd)
             stTime_pm = strToDateTime(st_pmStart)
@@ -485,10 +504,10 @@ def getTaskEndTime(startTime, endTime):
             Stamp_startTime = getTimeStamp(startTime)
             Stamp_endTime = getTimeStamp(endTime)
 
-            endNewTime = getDBtime(Stamp_stTime_am + TimeUp)
+            endNewTime = strToDateTime(getDBtime(Stamp_stTime_am + TimeUp))
             if endNewTime <= endTime_am:
                 print("endNewTime <= endTime_am:", endNewTime)
-                return endNewTime
+                return dateTimeToStr(endNewTime)
             elif endNewTime > endTime_am:
                 print("endNewTime > endTime_am:", endNewTime)
                 # 上午时间 + 中午时间
@@ -551,9 +570,11 @@ def create_Task(request):
             dd = datetime.datetime.strptime(startTime, "%Y-%m-%d %H:%M:%S")
             startTime = dd + datetime.timedelta(minutes=10)
     else:
-        # 选“马上开始"
+        # 选"马上开始"
         startTime = timezone.now().strftime("%Y-%m-%d %H:%M:%S")
-
+        print("马上开始：",startTime)
+        startTime = strToDateTime(startTime) + datetime.timedelta(seconds=5)
+    startPlanTime = startTime
     # print("create_Task: ", locals())
     # todo 结束时间 判断处理
 
@@ -583,13 +604,22 @@ def create_Task(request):
     if (not checkEmp):
         mgs = {"message": "员工不存在"}
         return HttpResponse(json.dumps(mgs, ensure_ascii=False))
-
+    print("*-startTime*-befor:", startTime)
     startTime = getTaksStartTime(startTime, selectEmp)
+    print("*-startTime*-after:",startTime)
+    print("*-getTimeStampToDatetime(time.time())*-:",getTimeStampToDatetime(time.time()))
+
+    if startTime< getTimeStampToDatetime(time.time()):
+        rert = {"erro": "开始时间未超过当前时间"}
+
+        return HttpResponse(json.dumps(rert, ensure_ascii=False))
 
     endTime = startTime + datetime.timedelta(hours=int(taskTime))
     print("startTime1", startTime, " endTime :", endTime)
 
     endTime = getTaskEndTime(startTime, endTime)
+
+    print("endTime2: ", endTime)
     projectId = views.getVuale("project", "name", projectName)
     print("projectId: ", projectId)
 
@@ -599,6 +629,7 @@ def create_Task(request):
     task['createTime'] = "\'" + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "\'"
     task['startTime'] = "\'" + str(startTime) + "\'"
     task['endTime'] = "\'" + str(endTime) + "\'"
+    task['startPlanTime'] = "\'" + str(startPlanTime) + "\'"  # 测试查看
     task['taskTime'] = "\'" + taskTime + "\'"
     task['strategy'] = strategy
     task['taskLevel'] = taskLevel
@@ -616,7 +647,8 @@ def create_Task(request):
 
     # todo test rert = companyView.createData(task, "Task", objs)
     print("task:", task)
-    rert = "1"  # test
+    # rert = "1"  # test
+    rert = companyView.createData(task, "Task", objs)
     print("rert", type(rert) is L1_Task_create.models.Task)
     if (type(rert) is L1_Task_create.models.Task):
         rert = {"success": "添加成功"}

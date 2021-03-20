@@ -12,7 +12,21 @@
 
 # Task.objects.filter(id=8).update(state=0)
 import time
-print(time.time())
+import datetime
+print(type(time.time()))
 # 1615777594
 # 1610445300
 # 1610446920
+def getDBtime(timeStamp):
+    '''
+    时间戳转 dateTime
+    :param timeStamp:
+    :return:
+    '''
+    dateArray = datetime.datetime.fromtimestamp(timeStamp)
+    otherStyleTime = dateArray.strftime("%Y-%m-%d %H:%M:%S")
+    return otherStyleTime
+print(time.time())
+
+print(getDBtime(time.time()))
+print(type(getDBtime(86400)))

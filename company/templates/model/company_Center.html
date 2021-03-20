@@ -9,7 +9,27 @@
     <link rel="stylesheet" type="text/css" href="/static/css/table.css"/>
 </head>
 <body>
-公司名称:<h1>{{ companyHtml.name }}</h1>
+公司名称:<h1 da>{{ companyHtml.name }} </h1>
+公司级别:<h2 data-data="{{ companyHtml.companyLv }}">{% if  companyHtml.companyLv == 1 %}
+{#公司级别:<h2 data-data="2">{% if  companyHtml.companyLv == 1 %}#}
+    <img src="/static/image/start.jpg"/>
+{% elif companyHtml.companyLv == 2 %}
+    <img src="/static/image/start.jpg"/>
+    <img src="/static/image/start.jpg"/>
+{% elif companyHtml.companyLv == 3 %}
+    <img src="/static/image/start.jpg"/>
+    <img src="/static/image/start.jpg"/>
+    <img src="/static/image/start.jpg"/>
+{% elif companyHtml.companyLv == 4 %}
+    <img src="/static/image/start.jpg"/>
+    <img src="/static/image/start.jpg"/>
+    <img src="/static/image/start.jpg"/>
+    <img src="/static/image/start.jpg"/>
+{% endif %}
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button>升级公司等级</button>
+</h2>
+
+
 公司简介: {% if not companyHtml.description %}
     暂无
 {% else %}
@@ -44,7 +64,7 @@
             </tbody>
         </table>
     </div>
-{#<button id="creatBusiness">创建项目</button>#}
+    {#<button id="creatBusiness">创建项目</button>#}
 
 </div>
 <div class="emp" style="display:none">
@@ -75,6 +95,7 @@
         <h2>选择岗位</h2>
         <select id="postSele">
             {#    <option ></option>#}
+
         </select>
         <br/>
         <button class="post" id="postSave">保存</button>

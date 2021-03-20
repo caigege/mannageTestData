@@ -21,7 +21,7 @@ $(document).ready(function () {
     })
 
     $("#task_verify").click(function () {
-        self.location="/task/taskVerify/"
+        self.location = "/task/taskVerify/"
     })
     /**
      * 确认任务
@@ -29,10 +29,72 @@ $(document).ready(function () {
     $('#taskInfoDiv tbody').on("click", "button[name='taskSure']", function () {
         var data = $(this).parent().parent().data("data")
         console.log(data)
-        $.post("/task/sureTask/",{"data":data},function (e) {
+        $.post("/task/sureTask/", {"data": data}, function (e) {
 
         })
         getTaskInof()
+    })
+
+    $('button[id="postCancel"]').click(function () {
+        //取消
+        $('#postChange_user').attr("style", "display:none")
+        return
+    })
+
+    // $("#postSave").click(function () {
+    //     // 保存
+    //     // var postnanme = department_global + "*" + $("#postSele option:selected").val()
+    //     //
+    //     // // 员工修改岗位
+    //     // $.post("/company/updatePost/", {"phone": phone_global, "postnanme": postnanme}, function (postdata) {
+    //     //     var JSONpostdata = JSON.parse(postdata)
+    //     //     alert(JSONpostdata.message)
+    //     //
+    //     //     $.get(
+    //     //         "/company/empGet/",
+    //     //         function (data, status) {
+    //     //             //知识点 js 对象类型
+    //     //             // console.log("data type", typeof data)
+    //     //
+    //     //             var JSONdata = JSON.parse(data)
+    //     //             showEmpthis(JSONdata);
+    //     //             // $("#postSave").remove()
+    //     //             $('#postChange').attr("style", "display:none")
+    //     //
+    //     //         })
+    //     //
+    //     // })
+    //     // return
+    // })
+    /**
+     * 分解任务
+     */
+    $('#taskInfoDiv tbody').on("click", "button[name='taskGoResolvej']", function () {
+        var data = $(this).parent().parent().data("data")
+        console.log(data)
+        console.log(data.split("*"), typeof data.split("*"))
+
+        //获取id 下个任务的 upTaskId
+        var task_upTaskId = data.split("*")[0]
+        $("input[name='upTaskId']").attr("value", task_upTaskId)
+        var task_projectId = data.split("*")[2]
+        $("input[name='projectName']").attr("value", task_projectId)
+
+        //获取项目id
+        //projectName
+        //
+        //
+
+
+        $('#postChange_user').attr("style", "display:block")
+        // $("#postSele").append(
+        //
+        //     "<option>" + 1 + "</option>"
+        // )
+        $.post("/task/secondTaskResolvej/", {"data": data}, function (e) {
+
+        })
+        // getTaskInof()
     })
 
     /**
@@ -63,10 +125,10 @@ $(document).ready(function () {
                             '                        <button name="submitTaskCheck">执行完成</button>'
                         if (dataEF.strategy == 1 || dataEF.strategy == 2) {
                             //todo 调整未处理
-                            stataTd += "<button>调整执行顺序</button>"
+                            stataTd += "<button class='orderBtn'>调整执行顺序</button>"
                         }
                         if (dataEF.taskLevel == 1) {
-                            stataTd += '<button class="taskGoResolvej">继续分解任务</button>'
+                            stataTd += '<button class="taskGoResolvej" name="taskGoResolvej">继续分解任务</button>'
                         }
                         break;
 

@@ -9,11 +9,11 @@ $(document).ready(function () {
     //用户唯一标识电话
     var phone_global = ""
 
-    $("#projectTbody").on("click","button[name='projectDetails']",function () {
+    $("#projectTbody").on("click", "button[name='projectDetails']", function () {
 
-        var businessName=$(this).parent().parent().children().eq(1).text()
+        var businessName = $(this).parent().parent().children().eq(1).text()
         // alert(businessName)
-        window.location="/tobusiness/"+businessName
+        window.location = "/tobusiness/" + businessName
     })
 
 
@@ -59,9 +59,9 @@ $(document).ready(function () {
                     "<td>" + JSONdata[i].name + "</td>" +
                     "<td>" + description + "</td>" +
                     "<td>" + JSONdata[i].schedule + "</td>" +
-                    "<td>" + JSONdata[i].source + "</td>"+
-                     state +
-                    "<td>" + JSONdata[i].note + "</td>"+
+                    "<td>" + JSONdata[i].source + "</td>" +
+                    state +
+                    "<td>" + JSONdata[i].note + "</td>" +
                     "<td> <button name='projectDetails'>详情</button> </td>" +
                     "</tr>"
                 )
@@ -207,6 +207,16 @@ $(document).ready(function () {
     })
 
     $("button[name='recruitment']").click(function () {
+
+        console.log($("h2").data("data"))
+        // 公司级别
+        // let companyLv = $("h2").data("data")
+        // if (companyLv == 1) {
+        //     alert("当前公司为:" + companyLv + "星,请提升公司级别后再试")
+        //     return
+        // }
+
+
         //招聘
         showOption($(".recruitment"))
 
@@ -225,7 +235,7 @@ $(document).ready(function () {
 
 
     $("button[name='add']").click(function () {
-
+        let companyLv = $("h2").data("data")
         let id = $(this).val()
         let dep = $(this).parent().parent().find("select option:selected").text()
         let bool = (id + dep).indexOf("&") != -1
@@ -233,45 +243,41 @@ $(document).ready(function () {
             alert("输入错误：" + bool + "选择部门")
             return
         }
-//        知识点
-// str.indexOf(res) != -1
-// str 存在的字符串(长的) res 验证的字符串(短的) true 包含 false 不包含
-
-// str.search(res) != -1
-// str 存在的字符串(长的) res 验证的字符串(短的) true 包含 false 不包含
-
-        console.log("id:" + id)
-        console.log("dep:" + dep)
-
-        {
-            // 添加员工
-
-        }
-
+        // if (companyLv <= 2) {
+        //查询是否有其他人
 
         $.ajax({
-            url: "/addEmp/" + id + "&" + dep,
-            error: function (e) {
-                alert("错误：", e)
-            },
-            // type:
+            url: "/addEmpCheck/" + dep + "&" + companyLv,
+            // error: function (e) {
+            //     alert("错误：", e[])
+            // },
             success: function (result) {
-                alert("成功" + result['message'])
 
+                if (result['message'] != "ok") {
+                    alert("异常" + result['message'])
+                    return
+                } else {
+                    $.ajax({
+                        url: "/addEmp/" + id + "&" + dep,
+                        error: function (e) {
+                            alert("错误：", e)
+                        },
+                        success: function (result) {
+                            alert("成功" + result['message'])
+                        }
+
+                    });
+                }
             }
-
         });
-
     })
 
     function showOption(e) {
         //展示对应的列表 隐藏其他列表
         var eles = [$(".dep"), $(".recruitment"), $(".emp"), $(".project")]
-        // $(".dep").attr("style", "display:block;")
-        // $(".recruitment").attr("style", "display:none;")
+
         for (ele in eles) {
 
-            // console.log(ele)
 
             eles[ele].attr("style", "display:none;")
         }

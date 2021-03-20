@@ -41,8 +41,8 @@ id是唯一的 主键
             4 顺利完成（未超期）
             5 验收后,超时完成（按工作时间计算）
             6 超时未提交验收 自动提交
-            
-            6 延迟（执行中超时未完成）
+            7:废弃
+            # 6 延迟（执行中超时未完成）
             # 7 时间计划提前执行 （不考虑）
             
 任务级别  1:方向级 2:分解任务级 3：任务可执行级
@@ -64,6 +64,7 @@ class Task(models.Model):
     # createTime = models.DateTimeField('任务创建时间',)
     createTime = models.DateTimeField("任务创建时间", auto_now_add=True)
     startTime = models.DateTimeField("任务开始时间", blank=True, null=True)
+    startPlanTime = models.DateTimeField("计划开始时间", blank=True, null=True)
     taskTime = models.IntegerField('工作时间长', default=0)
     endTime = models.DateTimeField("任务计划结束时间", blank=True, null=True)
     state = models.IntegerField('任务状态', default=0)

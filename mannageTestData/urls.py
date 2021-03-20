@@ -49,6 +49,7 @@ urlpatterns = [
     path('company/', companyView.companyC, name='company'),
     path('newList/user/', companyView.newList),
     path('addEmp/<id>', companyView.addEmp),
+    path('addEmpCheck/<dep>', companyView.addEmpCheck),
     path('company/addDep/', companyView.addDep),
     path('company/getDep/', companyView.getDep),
     path('company/empGet/', companyView.getEmp),
@@ -67,6 +68,7 @@ urlpatterns = [
     path('task/sureTask/', UserView.sureTask),
     path('task/taskVerify/', L1_Task_createView.taskVerify),
     path('task/taskVerifyResult/', L1_Task_createView.taskVerifyResult),
+    path('task/secondTaskResolvej/', UserView.secondTaskResolvej),
     # path('task/taskDo/', L1_TaskDo),
 
     # path('sys/login/', loginView.fristPage, name='login'),
