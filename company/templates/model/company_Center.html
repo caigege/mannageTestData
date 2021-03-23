@@ -26,7 +26,11 @@
     <img src="/static/image/start.jpg"/>
     <img src="/static/image/start.jpg"/>
 {% endif %}
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button>升级公司等级</button>
+{% if companyHtml.companyLv <= 2 %}
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button id="btnUpCompanyLv">升级公司等级</button>
+                    {% csrf_token %}
+{% endif %}
 </h2>
 
 
@@ -45,6 +49,7 @@
 <button name="project">项目管理</button>
 <button name="empCheck">员工</button>
 <div class="project" style="display:none">
+    <button id="createPro">新建项目</button>
     <div>
         <table class="pure-table pure-table-bordered">
             <thead>

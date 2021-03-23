@@ -456,8 +456,17 @@ def addEmp(request, id):
             User.objects.filter(id=empId).update(postStatus=2)
             mgs = {"message": str(empJ) + "添加成功"}
     return JsonResponse(mgs, charset='utf-8')
-
-
+@csrf_exempt
+def upCompany(request):
+    user = request.session.get("user")
+    companyLvQ=request.POST.get("companyLv")
+    # companyInfo = Company.objects.filter(account=user).first()
+    print("companyLvQ*****************:",companyLvQ)
+    if int(companyLvQ) <=2:
+        Company.objects.filter(account=user).update(companyLv=int(companyLvQ)+1)
+        return JsonResponse({"message": "升级成功"}, charset='utf-8')
+    else:
+        return JsonResponse({"message": "已经是最高级别了"}, charset='utf-8')
 def createData(data: dict, table, objs: dict = None):
     '''
     添加单条数据

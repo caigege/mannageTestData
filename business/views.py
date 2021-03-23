@@ -29,21 +29,28 @@ def getEmp(request):
     res = views.getAllVuale("emp", "post", "\'" + postName + "\'")
     ret = serializers.serialize("python", res)
     fields = companyViews.getArray(ret, "fields")
-    ret=companyViews.checkFormat(fields)
+    ret = companyViews.checkFormat(fields)
     if (len(ret) == 0):
         ret = {"mgs": "未查询到"}
         # return JsonResponse(json.dumps(ret,ensure_ascii=False), safe=False)
 
     # print("getEmp ret :",ret)
-    return JsonResponse(json.dumps(ret,ensure_ascii=False), safe=False)
+    return JsonResponse(json.dumps(ret, ensure_ascii=False), safe=False)
 
 
 @csrf_exempt
 def toBusiness(request, businessName):
-    print("toBusiness:" + businessName)
-    result = views.getVuale("project", "name", businessName)
+    # print("toBusiness:" + businessName)
+    task1 = views.getVuale("project", "name", businessName)
+    # task1 = project.objects.get("project", "name", "\'" + businessName+"\'" )
+    # result = serializers.serialize("python", task1)
 
-    return render(request, "model/business_order.html", {"project": result})
+    # print("result:",task1["pk"])
+    return render(request, "model/business_order.html", {"type": 1, "project": task1})
+
+
+def createPro(request):
+    return render(request, "model/business_order.html",{"type": 2})
 
 
 @csrf_exempt
@@ -72,11 +79,11 @@ def create(request):
 
     data['companyId'] = 'company'
     objs = {"company": company, "project": project}
-    if(name.replace( ' ' , '' )==""):
+    if (name.replace(' ', '') == ""):
         mgs = {"erro": "项目名不能为空"}
         return JsonResponse(mgs, charset='utf-8', safe=False, json_dumps_params={"ensure_ascii": False})
     #
-    if(description.replace( ' ' , '' )==""):
+    if (description.replace(' ', '') == ""):
         mgs = {"erro": "项目名简介 不能为空"}
         return JsonResponse(mgs, charset='utf-8', safe=False, json_dumps_params={"ensure_ascii": False})
     #

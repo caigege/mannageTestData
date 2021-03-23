@@ -21,7 +21,8 @@
         function getCompany() {
             var type = document.getElementById("type").value;
             {#alert(type+":"+(type == "企业"))#}
-
+            document.getElementById("companyName").style.display = "block";
+            {#
             if (type == "企业") {
                 {#显示#}
                 {#alert(1)#}
@@ -31,6 +32,7 @@
                 {#alert(2)#}
                 document.getElementById("companyName").style.display = "none";
             }
+             #}
         }
     </script>
 </head>
@@ -62,7 +64,7 @@
                 <option>{{ typeid.typeName }}</option>
             {% endfor %}
         </datalist>
-        <input id="type" onchange="getCompany()" type="text" name="type" list="typelist" placeholder="选择账户类型"><br/>
+        <input id="type" onclick="getCompany()" type="text" name="type" list="typelist" placeholder="选择账户类型"><br/>
         <input id="code" type="number" maxlength="4" placeholder="输入验证码">
         <input id="getCode" type="button" value="获取验证码"><br/>
         <input id="companyName" type="text" style="display:none" name="companyName" placeholder="输入公司名称"><br/>

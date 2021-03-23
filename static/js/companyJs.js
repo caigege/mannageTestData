@@ -9,13 +9,33 @@ $(document).ready(function () {
     //用户唯一标识电话
     var phone_global = ""
 
+
+    $('#btnUpCompanyLv').click(function () {
+        // 升级
+        let companyLv = $("h2").data("data")
+        $.ajax({
+            url: "/company/upCompany/",
+            type: "POST",
+            data: {
+                companyLv: companyLv,
+            },
+            success: function (resulet) {
+                alert(resulet.message)
+                getdep()
+            }
+        })
+
+    })
     $("#projectTbody").on("click", "button[name='projectDetails']", function () {
 
         var businessName = $(this).parent().parent().children().eq(1).text()
         // alert(businessName)
         window.location = "/tobusiness/" + businessName
     })
-
+    $("#createPro").click(function(){
+    //    创建
+        window.location = "/tobusiness/createPro/"
+    })
 
     $("button[name='project']").click(function () {
 
@@ -287,6 +307,7 @@ $(document).ready(function () {
 
 
     }
+
 
     function checkDep(data) {
         $("#DepTbody").empty()

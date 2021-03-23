@@ -5,6 +5,7 @@ from django.core import serializers
 from django.http import HttpResponse
 from django.shortcuts import render
 from company import views as  companyView
+from business.models import project
 from L1_Task_create.models import Task
 from django.views.decorators.csrf import csrf_exempt
 
@@ -86,6 +87,42 @@ def getUserAjax(request):
     print("resultdata ----*****----:",type(resultdata),resultdata)
     return HttpResponse(json.dumps(companyView.checkFormat(resultdata), ensure_ascii=False))
 
+@csrf_exempt
+def refreshSchedule(request):
+    '''
+    查询项目进度
+            0:任务确认(01超时未确认，02强制回收（未确认状态）,意外回收（
+            1:执行中(确认后按开始时间判断）
+            *2:执行完成 待验收
+            *3:提前完成
+            *4 顺利完成（未超期）
+            *5 验收后,超时完成（按工作时间计算）
+            6 超时未提交验收 自动提交
+            *7:废弃
+            *8:回收再发布，必须重新发布后才标示
+            9:暂停
+    :param request:
+    :return:
+    '''
+    # 查询
+    projectId=request.POST.get("data")
+    print("projectId:",projectId)
+    # 查询任务
+    ress=Task.objects.filter(projectId=projectId)
+    ressNum=len(ress)
+    print("p:",ressNum)
+    result_ress = serializers.serialize("python", ress)
+    # print(result_ress)
+    NumCode=0
+    for res in result_ress :
+        if res["fields"]["state"] in [2,3,4,5,7,8]:
+            NumCode=NumCode+1
+    numCode=str(NumCode)+"/"+ str(ressNum)
+#             写入
+#     返回数据
+
+    project.objects.filter(id=projectId).update(schedule=numCode)
+    return HttpResponse(numCode)
 
 def secondTaskResolvej(request):
     '''

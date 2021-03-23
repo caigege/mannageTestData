@@ -7,24 +7,53 @@
     <script src="/static/js/jquery.form.js"></script>
     <script src="/static/js/businessJs.js"></script>
     <script type="text/javascript">{{ script }}('{{ mgs }}')
+    {#import {seff} from '/static/js/businessJs.js'#}
 
     function toCompany() {
-            self.location = "/company/";
-        }
+        self.location = "/company/";
+        {#seff($('#detail'))#}
+    }
     </script>
 
 </head>
 <body>
 <button id="createBuniness">创建新项目</button>
-<button id="mainPage" onclick="toCompany()" >公司首页</button>
+<button id="mainPage" onclick="toCompany()">公司首页</button>
+{#{% if type == 1 or type == "1" %}#}
+{##}
+{#    <script  >#}
+{#    alert(1)#}
+        {#import {seff} from "/static/js/businessJ1s.js"#}
+{#        import  "/static/js/businessJ1s.js"#}
+{##}
+        {#todo 处理加载问题#}
+{#        window.onload = function () {#}
+{#            seff($('#detail'))#}
+{#        }#}
+{##}
+{#    </script>#}
+{#{% elif type == 2 or type == "2" %}#}
+{#    <script>#}
+{#        import {seff} from '/static/js/businessJs.js'#}
+{##}
+        {#window.onload(seff($('#createTable')))#}
+{#        window.onload = function () {#}
+{#            seff($('#createTable'))#}
+{#        }#}
+{##}
+{#    </script>#}
+{##}
+{#{% endif %}#}
+
+{#net::ERR_CONNECTION_REFUSED#}
 <div style="background-color: rgba(91,208,237,0.61)" id="detail">
     <strong>项目名:</strong>
-    <p><span style="font-size: 20px " name="projectName"><b>{{ project.name }}</b></span></p><br/>
+    <p><span style="font-size: 20px " name="projectName" data-data="{{ project.id }}"><b>{{ project.name }}</b></span></p><br/>
     <strong>项目简介:</strong>
     <p>{{ project.description }}</p><br/>
     <strong>项目进度:</strong>&nbsp&nbsp&nbsp&nbsp&nbsp<span
-        style="color: rgba(206,34,201,0.87)">{{ project.schedule }}</span>
-    <button>刷新进度</button>
+       id="scheduleDetail" style="color: rgba(206,34,201,0.87)">{{ project.schedule }}</span>
+    <button id="refreshSchedule">刷新进度</button>
     <br/>
     <strong>来源:</strong>
     <p>{{ project.source }}</p><br/>
@@ -39,14 +68,15 @@
         <p style='background-color:aliceblue;  color: #000000;  width: 200px;'>暂停</p>
     {% elif project.state == 4 %}
         <p style='background-color:grey;   color: #fff;  width: 200px;'>终止</p>
-    {% else %}
-        <p style='color:red;    width: 200px;'>异常</p>
+        {#    {% else %}#}
+        {#        <p style='color:red;    width: 200px;'>异常</p>#}
 
     {% endif %}
     <br/>
     <strong>备注</strong>:<br/>
     <button id="resolve">分解任务</button>
 </div>
+
 <div id="createTaskDiv" style="display:none;">
     分解任务
 
@@ -96,7 +126,7 @@
         <input id="start" name="startTime" type="datetime-local">
         <br/>
 
-        <input type="checkbox" name="nowOrNot" >马上开始(不选择将于"开始时间"后10分钟开始,10分钟内确认任务,结束时间为开始时间+工作耗时)
+        <input type="checkbox" name="nowOrNot">马上开始(不选择将于"开始时间"后10分钟开始,10分钟内确认任务,结束时间为开始时间+工作耗时)
         勾选后,"开始时间"作为开始，不再考虑确认时间
         <br/><br/><br/><br/>
         <input type="submit" name="createTaskSubmit" value="提交">

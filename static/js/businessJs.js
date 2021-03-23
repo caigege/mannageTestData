@@ -1,3 +1,9 @@
+// exports.seff = function (e){
+// export function seff(e){
+//     window.showOption(e)
+//     alert("1s")
+// }
+// import 'initCache.js'
 $(document).ready(function () {
     $(function () {
         $("#createProjectForm").ajaxForm(function (dataJson) {
@@ -9,7 +15,23 @@ $(document).ready(function () {
             }
         })
     })
+    $("#refreshSchedule").click(function () {
+        //    刷新任务进度
+        //     $.post()
+        //  获取项目id
+        console.log(1)
+        var data = $("span[name='projectName']").data("data")
+        // console.log(data)
+        if (data == "") {
+            alert("请先创建项目")
+            return
+        }
 
+        $.post("/task/refreshSchedule/", {"data": data}, function (e) {
+            console.log(e)
+            $("#scheduleDetail").text(e)
+        })
+    })
     $(function () {
 
         $("#createTaskDiv").ajaxForm(function (data) {
@@ -95,7 +117,7 @@ $(document).ready(function () {
             alert("时间不能为空")
             Tasks = {}
             return
-        } else if (workTime < 0 || workTime>8) {
+        } else if (workTime < 0 || workTime > 8) {
             alert("时间不能小于0,时间不能大于8")
             Tasks = {}
 
@@ -304,8 +326,6 @@ $(document).ready(function () {
 //     var sty = $(this).css("background-color")
 //         console.log(sty)
 // })
-
-//
 
 
     $(".strategyOption").click(function () {
