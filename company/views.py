@@ -26,7 +26,7 @@ def getProject(request):
     obj = {"companyId": company, "project": project}
     res = views.getVualeAllObj("project", "companyId", "companyId", obj)
     # res
-    print("this is getProject")
+    # print("this is getProject")
     # result=Test_Data.resultoK
     # lists = Test_Data.resultoKstr
     s = serializers.serialize("python", res)
@@ -58,7 +58,7 @@ def update(table, keyName, key, objs=None, **dicts):
 def updatePost(request):
     phone = request.POST.get("phone")
     postnanme = request.POST.get("postnanme")
-    print("phone", phone, postnanme)
+    # print("phone", phone, postnanme)
     reslut = update("emp", "phone", str(phone), objs=None, post="\'" + postnanme + "\'")
     if reslut == 1:
         msg = {"message": "更新成功"}
@@ -72,7 +72,7 @@ def updatePost(request):
 def getPost(request):
     depName = request.GET.get("department")
     # depName = request.POST.get("depName")
-    print("getPost depName:", depName)
+    # print("getPost depName:", depName)
     dep = views.getVuale("department", "name", depName)
     objs = {"post": post, "departmentId": dep}
     postObj = views.getVualeAllObj("post", "departmentId", "departmentId", objs)
@@ -110,7 +110,7 @@ def addPost(request):
 
     objs = {"depK": depK, "post": post}
     result = createData(postObj, "post", objs)
-    print("result", result)
+    # print("result", result)
     if (type(result) is post):
         msg = {"message": "添加成功"}
     elif (result == "已存在"):
@@ -129,7 +129,7 @@ def checkFormat(lists: list or dict):
     '''
     if (isinstance(lists, list)):
         for liss in lists:
-            print("liss*******:", type(liss), liss)
+            # print("liss*******:", type(liss), liss)
             for lissK in liss.keys():
                 value = liss.get(lissK)
                 # print("checkFormat: ",type(value))
@@ -362,9 +362,9 @@ def addEmpCheck(request, dep):
     department1 = views.getAllVuale("department", "name", "\'"+company.name + "-" + dept +"\'")
 
     depa=serializers.serialize("python", department1);
-    print("companylv:",companylv,type(companylv))
-    print("depa:",depa)
-    print("depa:",depa[0]["pk"])
+    # print("companylv:",companylv,type(companylv))
+    # print("depa:",depa)
+    # print("depa:",depa[0]["pk"])
     #
     s=emp.objects.filter(department=depa[0]["pk"])
 
@@ -461,7 +461,7 @@ def upCompany(request):
     user = request.session.get("user")
     companyLvQ=request.POST.get("companyLv")
     # companyInfo = Company.objects.filter(account=user).first()
-    print("companyLvQ*****************:",companyLvQ)
+    # print("companyLvQ*****************:",companyLvQ)
     if int(companyLvQ) <=2:
         Company.objects.filter(account=user).update(companyLv=int(companyLvQ)+1)
         return JsonResponse({"message": "升级成功"}, charset='utf-8')
@@ -470,9 +470,12 @@ def upCompany(request):
 def createData(data: dict, table, objs: dict = None):
     '''
     添加单条数据
-    :param data:
+    :param data: 字典写入的
+    :param table: 表名class
+    :param objs: 外键对象
     :return:
     '''
+
     # 遍历字典
     keylist = data.keys()
     dataStr = ""

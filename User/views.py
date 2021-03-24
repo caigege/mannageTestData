@@ -11,7 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 def getUser(request):
     user = request.session.get("user")
-    print("getUser - user：", user)
+    # print("getUser - user：", user)
     # res=getAllVuale("Task","selectEmp","\'"+user+"\'")
     res = Task.objects.filter(selectEmp=user,state__in=[0,1,2,3,4,5,6]).order_by("createTime")
 
@@ -44,7 +44,7 @@ def getUser(request):
 @csrf_exempt
 def sureTask(request):
     data = request.POST.get("data")
-    print(data)
+    # print(data)
     # 任务id
     pk = data.split("*")[0]
     # taskCreate = data.split("*")[1]
@@ -57,7 +57,7 @@ def sureTask(request):
 
 def getUserAjax(request):
     user = request.session.get("user")
-    print("getUser - user：", user)
+    # print("getUser - user：", user)
     # res=getAllVuale("Task","selectEmp","\'"+user+"\'")
     res = Task.objects.filter(selectEmp=user,state__in=[0,1,2,3,4,5,6]).order_by("createTime")
     result=serializers.serialize("python", res)
@@ -84,7 +84,7 @@ def getUserAjax(request):
         elif num == 5:
             lv5.append(ret)
     resultdata = lv5 + lv4 + lv3 + lv2 + lv1
-    print("resultdata ----*****----:",type(resultdata),resultdata)
+    # print("resultdata ----*****----:",type(resultdata),resultdata)
     return HttpResponse(json.dumps(companyView.checkFormat(resultdata), ensure_ascii=False))
 
 @csrf_exempt
@@ -106,11 +106,11 @@ def refreshSchedule(request):
     '''
     # 查询
     projectId=request.POST.get("data")
-    print("projectId:",projectId)
+    # print("projectId:",projectId)
     # 查询任务
     ress=Task.objects.filter(projectId=projectId)
     ressNum=len(ress)
-    print("p:",ressNum)
+    # print("p:",ressNum)
     result_ress = serializers.serialize("python", ress)
     # print(result_ress)
     NumCode=0
@@ -131,7 +131,7 @@ def secondTaskResolvej(request):
     :return:
     '''
     data = request.POST.get("data")
-    print(data)
+    # print(data)
     # 任务id
     pk = data.split("*")[0]
     # taskCreate = data.split("*")[1]

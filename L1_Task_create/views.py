@@ -13,6 +13,7 @@ from django.views.decorators.csrf import csrf_exempt
 import L1_Task_create
 from L1_Task_create.models import Task
 from L1_Task_create.testTime import workDay, dic
+from L1_UserTaskRecode.views import codeTask
 from company import views as companyView
 from login import views
 # from test.testTime import planTime
@@ -32,12 +33,12 @@ from tools.tool_time import getDayStr, strToDateTime, getTimeStamp, getDBtime, d
             6 超时未提交验收 自动提交
             7:废弃
             8:回收再发布
-            9:暂停
+            9:暂停，
             # 6 延迟（执行中超时未完成）
             # 7 时间计划提前执行 （不考虑）
             
 '''
-
+# 暂停 todo 后续动作，重新启动，起动后的时间按权重和优先级在安排，增加之前的状态
 
 @csrf_exempt
 def taskVerifyResult(requset):
@@ -82,51 +83,64 @@ def taskVerifyResult(requset):
     finshiTimeWF_long = int(finshiTimeWF) / 1000
     # time.time()
     # time
-    print(finshiTime_long - 1 < time.time(), "过期")
+    # print(finshiTime_long - 1 < time.time(), "过期")
 
     if (selec == "1"):
+        # 继续
         # 前端已经判断时间 还是要判断，不然系统时间会出问题，而且延迟2秒缓冲 保证计算时间在分钟内精确
-        # todo 记录继续过程
+
+        # print("selec",1)
+
         if (finshiTime_long - 1 < time.time()):
             rert = {"result": "erro", "content": "任务已超时，其选择其他验收方案"}
-            return HttpResponse(json.dumps(rert, ensure_ascii=False))
+
         else:
             #     可以继续,修改任务状态 为通知状态,需要再次确认 todo 记录任务未完成类型
 
             Task.objects.filter(id=taskId).update(state=0)
+            codeTask(Task.objects.filter(id=taskId), 2)
             rert = {"result": "success", "content": "更新成功"}
-            return HttpResponse(json.dumps(rert, ensure_ascii=False))
+
+        return HttpResponse(json.dumps(rert, ensure_ascii=False))
+
+
     elif (selec == "0"):
-        # 通过状态 todo 记录完成过程
+        # 通过状态
+
         if (finshiTime_long - 1 < time.time()):
             # 超时完成
             Task.objects.filter(id=taskId).update(state=5)
+            codeTask(Task.objects.filter(id=taskId), 2)
 
         else:
             if finshiTimeWF_long - 1 < time.time():
                 #     提前完成
                 Task.objects.filter(id=taskId).update(state=3)
+                codeTask(Task.objects.filter(id=taskId), 2)
             else:
                 # 顺利完成
                 Task.objects.filter(id=taskId).update(state=4)
+                codeTask(Task.objects.filter(id=taskId), 2)
         rert = {"result": "success", "content": "更新成功"}
         return HttpResponse(json.dumps(rert, ensure_ascii=False))
     elif (selec == "2"):
-        # todo 记录任务时间 和状态
+        # 加急
         # 设置更新工作时长,工作开始时间，任务状态为确认状态
         # 'test'
+
 
         Task.objects.filter(id=taskId).update(state=0,
                                               startTime=tool_time.getDBtime(time.time() + int(workTime) * 60 * 60),
                                               taskTime=workTime)
+        codeTask(Task.objects.filter(id=taskId), 2)
 
     elif (selec == "3"):
         # 延期
         res = Task.objects.get(id=taskId)
 
-        print("res.priorityLevel:", type(res.priorityLevel), res.priorityLevel)
-        print("res.projectId:", type(res.projectId), res.projectId)
-        print("res.strategy:", type(res.strategy), res.strategy)
+        # print("res.priorityLevel:", type(res.priorityLevel), res.priorityLevel)
+        # print("res.projectId:", type(res.projectId), res.projectId)
+        # print("res.strategy:", type(res.strategy), res.strategy)
         # 优先级别
         priorityLevel = res.priorityLevel
         # 项目id
@@ -134,39 +148,47 @@ def taskVerifyResult(requset):
         # 权重
         strategy = res.strategy
         startTime = Task.objects.filter(strategy=strategy, projectId=projectId).all().aggregate(Max("startTime"))
-        print("startTime：", startTime)
+        # print("startTime：", startTime)
 
         workTime = Task.objects.filter(startTime=startTime["startTime__max"], projectId=projectId).all().aggregate(
             Max("taskTime"))
         # print("workTime：", workTime)
 
         sTime = tool_time.getTimeStamp(startTime["startTime__max"]) + workTime["taskTime__max"] * 60 * 60
-        print("sTime：", sTime)
+        # print("sTime：", sTime)
         if time.time() > sTime:
             sDBTime = tool_time.getDBtime(time.time())
         else:
             # 如果时间超过当前，则用计算时间
             sDBTime = tool_time.getDBtime(sTime)
-        print("sDBTime：", sDBTime)
+        # print("sDBTime：", sDBTime)
         # 查询项目中 同级（权重）中人物开始时间最大的 和工作时间后的时间作为开始时间 同项目
 
         Task.objects.filter(id=taskId).update(state=0, priorityLevel=priorityLevel + 1, startTime=sDBTime)
+        codeTask(Task.objects.filter(id=taskId), 2)
         rert = {"result": "success", "content": "更新成功"}
         return HttpResponse(json.dumps(rert, ensure_ascii=False))
     elif (selec == "4"):
-        # 废弃任务
+        # 废弃任务 todo 批量处理
         Task.objects.filter(upTaskId=taskId).update(state=7)
         Task.objects.filter(id=taskId).update(state=7)
+        codeTask(Task.objects.filter(id=taskId), 2)
+
         rert = {"result": "success", "content": "更新成功"}
         return HttpResponse(json.dumps(rert, ensure_ascii=False))
+
     elif (selec == "5"):
-        # 回收再发布
+        # 回收再发布 todo 再发布处理
         Task.objects.filter(upTaskId=taskId).update(state=8)
         Task.objects.filter(id=taskId).update(state=8)
+        codeTask(Task.objects.filter(id=taskId), 2)
+
     elif (selec == "6"):
-        # 暂停任务
+        # 暂停任务 todo 批量处理
         Task.objects.filter(upTaskId=taskId).update(state=9)
         Task.objects.filter(id=taskId).update(state=9)
+        codeTask(Task.objects.filter(id=taskId), 2)
+
 
     return HttpResponse("处理成功")
 
@@ -218,11 +240,18 @@ def getTaksStartTime(guestStartTime, empId):
         if endTimeGlTask_0 <= stTime:
             # 9:00前开始的任务的结束时间 小于9:00
             #     判断在时间9-12内的
-            return getWorkStartTime(empId, endTime, stTime, "am", 1)
+            print("endTimeGlTask_0 <= stTime")
+            rTime=getWorkStartTime(empId, endTime, stTime, "am", 1)
+            print("rTime:",type(rTime),rTime)
+            if rTime<getTimeStampToDatetime(time.time()):
+                rTime=getTimeStampToDatetime(time.time())
+            return rTime
         elif endTimeGlTask_0 < endTime:
             # 9:00前开始的任务的结束时间 大于9:00- 12:00
+            print("endTimeGlTask_0 > stTime")
             return getWorkStartTime(empId, endTime, stTime, "am", 2, endTimeTask=endTimeGlTask_0)
         elif endTimeGlTask_0 < strToDateTime(day + " " + dic[sWorkTime]["pm"]["endTime"]):
+            print("endTimeGlTask_0 < strToDateTime")
             return getWorkStartTime(empId, endTime, stTime, "pm", 3, endTimeTask=endTimeGlTask_0)
         else:
             #            第二工作日
@@ -646,10 +675,10 @@ def create_Task(request):
     #                     selectDep=selectDep,selectPost=selectPost,selectEmp=str(selectEmp))
 
     # todo test rert = companyView.createData(task, "Task", objs)
-    print("task:", task)
+    # print("task:", task)
     # rert = "1"  # test
     rert = companyView.createData(task, "Task", objs)
-    print("rert", type(rert) is L1_Task_create.models.Task)
+    # print("rert", type(rert) is L1_Task_create.models.Task)
     if (type(rert) is L1_Task_create.models.Task):
         rert = {"success": "添加成功"}
     else:

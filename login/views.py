@@ -25,7 +25,7 @@ def exit(request):
     # accout = request.session.get("user")
     # accout = request.session.get("user")
     # accout = request.session.get("user")
-    print()
+    # print()
     msg = {"message": "success: 添加成功"}
 
     return JsonResponse(msg)
@@ -50,18 +50,18 @@ def login(request):
 
         # ----------------------------------
         if (typeL == "个人"):
-            print("个人账号登录")
+            # print("个人账号登录")
             phoneJp = check("User", "phone", account)
 
             if (phoneJp == True):
 
                 # 知识点：获取某条记录字段的值
 
-                print(password)
+                # print(password)
                 user = getVuale("User", "phone", account)
                 passwordDB = user.password
 
-                print("passwordDB: " + passwordDB)
+                # print("passwordDB: " + passwordDB)
                 if (password == passwordDB):
                     # request.session["key"]=
                     cookie = request.COOKIES.get("csrftoken")
@@ -72,22 +72,22 @@ def login(request):
             return render(request, 'model/erro/loginErro.html', {'error_msg': '账号/或密码错误'})
 
         elif (typeL == "企业"):
-            print("企业账号登录")
+            # print("企业账号登录")
             accountJp = check("Company", "account", account)
 
             if (accountJp == True):
 
                 # 知识点：获取某条记录字段的值
 
-                print(password)
+                # print(password)
                 user = getVuale("Company", "account", account)
                 passwordDB = user.password
 
-                print("passwordDB: " + passwordDB)
+                # print("passwordDB: " + passwordDB)
                 if (password == passwordDB):
                     # return redirect('/login/')
                     cookie = request.COOKIES.get("csrftoken")
-                    print("cookie ：" + cookie)
+                    # print("cookie ：" + cookie)
                     # request.session['is_login'] = True
                     request.session['user'] = account
                     request.session['csrftoken'] = cookie
@@ -138,9 +138,9 @@ def check(table, field, fieldObject):
     :param fieldObject: 字段值
     :return: Ture 存在 False 不存在
     '''
-    print("fieldObject: " + fieldObject)
+    # print("fieldObject: " + fieldObject)
     checkObject = "judge=" + table + ".objects.get(" + field + "=\'" + fieldObject + "\')"
-    print("checkObject :" + checkObject)
+    # print("checkObject :" + checkObject)
     try:
         exec(checkObject)
         # post
@@ -160,13 +160,13 @@ def getVuale(table, field, fieldObject):
     # print("getVuale-fieldObject: " , fieldObject)
     checkObject = table + ".objects.get(" + field + "=\'" + str(fieldObject) + "\')"
 
-    print("checkObject :" + checkObject)
+    # print("checkObject :" + checkObject)
     try:
         result = eval(checkObject)
     except:
         checkObject = table + ".objects.get(" + field + "=" + str(fieldObject) + ")"
         # project
-        print("checkObject except :" + checkObject)
+        # print("checkObject except :" + checkObject)
         result = eval(checkObject)
     # print("result:" + str(result))
 
@@ -184,7 +184,7 @@ def getVualeStr(table, field, fieldObject: str):
     # print("getVuale-fieldObject: " , fieldObject)
     checkObject = table + ".objects.get(" + field + "=\'" + str(fieldObject) + "\')"
 
-    print("checkObject :" + checkObject)
+    # print("checkObject :" + checkObject)
     try:
         result = eval(checkObject)
     except:
@@ -230,7 +230,7 @@ def getAllVuale(table, field, fieldObject):
     except EOFError:
         # cheeckObject = table + ".objects.get(" + field + "=" + str(fieldObject) + ")"
         # print("checkObject except :"+checkObject)
-        print(EOFError)
+        # print(EOFError)
         result = {"msg": "查询异常"}
     # result = eval(checkObject)
     # print("result:" + str(result))
@@ -239,7 +239,7 @@ def getAllVuale(table, field, fieldObject):
 
 
 def register(request):
-    print("register-----")
+    # print("register-----")
     if request.method == 'POST':
         account = request.POST.get("account")
         password = request.POST.get("password")

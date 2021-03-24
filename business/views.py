@@ -92,7 +92,7 @@ def create(request):
         mgs = {"success": "项目" + "添加成功"}
     else:
         mgs = {"erro": projectJ['mgs']}
-    print("create:", mgs)
+    # print("create:", mgs)
 
     return JsonResponse(mgs, charset='utf-8', safe=False, json_dumps_params={"ensure_ascii": False})
     # return  HttpResponse({'alert(1)'})

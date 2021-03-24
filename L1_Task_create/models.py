@@ -68,6 +68,8 @@ class Task(models.Model):
     taskTime = models.IntegerField('工作时间长', default=0)
     endTime = models.DateTimeField("任务计划结束时间", blank=True, null=True)
     state = models.IntegerField('任务状态', default=0)
+    upstate = models.IntegerField('暂停前状态', default=-1)
+
 
     strategy = models.IntegerField('任务策略', default=1)
     taskLevel = models.IntegerField('任务级别', default=1)
