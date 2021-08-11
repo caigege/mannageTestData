@@ -67,6 +67,8 @@ def create(request):
     source = request.POST.get("source")
     note = request.POST.get("note")
     if name is not None:
+
+
         data['name'] = "\'" + name + "\'"
     if description is not None:
         data['description'] = "\'" + description + "\'"

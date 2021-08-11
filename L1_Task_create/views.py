@@ -353,6 +353,10 @@ def okTime(empId, endTime, mid, stTime, upDown):
     :return:
     '''
     # 结束时间= 在工作时间内发现任务开始时间,mid 为结束时间的最大值
+    # print("okTime: ",empId, endTime, mid, stTime, upDown)
+    print("endTime: ",type(endTime) ,upDown)
+    if type(endTime) is str:
+        endTime=strToDateTime(endTime)
     judgeTime = (endTime - mid['endTime__max']).seconds
     if judgeTime < 30 * 60:
         # 不在工作时间内
@@ -366,8 +370,10 @@ def okTime(empId, endTime, mid, stTime, upDown):
         else:
             #         "am"
             #     下午
+            print("endTime:",endTime,type(endTime))
+            print("strToDateTime(endTime):",dateTimeToStr(endTime))
             wT = whoSelect(endTime)
-            day = getDayStr(strToDateTime(endTime))
+            day = getDayStr(endTime)
             endTime = day + " " + dic[wT]["pm"]["endTime"]
             stTime = day + " " + dic[wT]["pm"]["starTime"]
             # 判断 结束时间是否在范围内
